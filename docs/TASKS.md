@@ -12,16 +12,19 @@
 
 ## Phase 1, devnet core
 
-- [ ] Fork PsycheFoundation/nousnet into wienerlabs, strip to coordinator + client + shared crates, build with Nix
-- [ ] Read the coordinator crate end to end; map every state transition and the dead Ejected/slashed paths
-- [ ] Anchor: bond account (deposit on join, challenge-window exit)
-- [ ] Anchor: audit assignment from round seed (probability p, shuffled-index verifier committee)
-- [ ] Anchor: dispute instruction with commitment evidence; committee verdict; slash routing (bounty to reporter, remainder to treasury); ejection that treasurer actually reads
-- [ ] Rust verifier daemon: replay a sampled contribution from (checkpoint, seed, data), tolerance-band comparison, fraud proof submission
-- [ ] Port centered-clip excision into the aggregation path as pre-filter
-- [ ] Local 4-node swarm on one machine against devnet; nanoGPT-scale model through the full chain path
-- [ ] Conviction demo capture: fabricated delta caught, slashed, ejected
-- [ ] Anchor test suite green; two-GPU replay reproducibility check
+Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two-GPU tolerance-band replay reproduced.
+
+- [ ] 1.1 Fork bootstrap: private mirror of PsycheFoundation/nousnet as wienerlabs/leviathan-net, upstream remote wired, workspace builds, centralized backend local smoke
+- [ ] 1.2 Code map: shared/coordinator state machine plus the five Anchor programs read end to end; dead-code inventory confirmed at file:line (Verifier todo, Ejected never set, treasurer ignoring slashed)
+- [ ] 1.3 Devnet deploy of the inherited programs under our own program IDs
+- [ ] 1.4 Bond account: deposit on join, challenge-window exit, refund path, anchor tests
+- [ ] 1.5 Audit assignment: deterministic lottery from the round seed at probability p, shuffled-index verifier committee reusing the witness selection code
+- [ ] 1.6 Dispute, verdict, slash: fraud claim instruction, committee vote, slash routing with reporter bounty and treasury remainder, ejection the treasurer actually reads
+- [ ] 1.7 Aggregation adaptation: centered clip plus excision over SparseLoCo-compressed pseudo-gradients, validated back in sim/
+- [ ] 1.8 Verifier daemon v0: replay from (checkpoint, seed, data), tolerance-band comparison, fraud proof submission
+- [ ] 1.9 Four-process local swarm against devnet with a fabricated-delta malicious mode
+- [ ] 1.10 Conviction demo capture plus two-GPU replay reproducibility (Mac plus rented CUDA instance, first band calibration)
+- [ ] 1.p Parallel track: manifesto landing page, name finalization with domain and handle check
 
 ## Phase 2, Genesis Run
 
