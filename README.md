@@ -121,8 +121,10 @@ The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0)
 - 1.6 Dispute and slash: the coordinator's slashed counter that upstream wrote but no program read now has a live producer feeding the treasurer settlement
 - 1.7 Aggregation holds in the SparseLoCo transport domain: the coalition is rejected even harder under 2% compression
 - 1.8 Verifier core: tolerance-band replay separates 1% cross-hardware drift from every attack class, zero honest false positives
-- 1.10 Live devnet conviction: the whole loop runs on real chain (bond posted 500, slashed 200 written on-chain, bond recovered 300, forfeit 200 retained), matching the deterministic memnet proof (17/17 suites)
-- Remaining: 1.9 real training swarm, gated on the libtorch and NousResearch tch toolchain bring-up (the trainer fuel, not the trust machine)
+- 1.9 Training swarm on live devnet: the client builds against the NousResearch tch fork (PyTorch 2.9.1) and trains a real Nano-Llama on MPS for a full epoch (17 rounds, DisTrO gradients over iroh, Join/Witness/Tick transactions), coordinated by our devnet coordinator
+- 1.10 Live devnet conviction: the whole security loop runs on real chain (bond posted 500, slashed 200 written on-chain, bond recovered 300, forfeit 200 retained), matching the deterministic memnet proof (17/17 suites)
+
+Phase 1 is complete on devnet: the trust machine (bonds, audits, slashing) and the training swarm both run on live chain.
 
 ## This repository
 
