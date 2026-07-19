@@ -18,6 +18,7 @@ from leviathan_sim.economy import EconomyConfig, StakeLedger, calibration_table
 from leviathan_sim.model import build_model, parameter_count
 from leviathan_sim.sparse import chunked_topk_sign
 from leviathan_sim.swarm import NesterovOuter, SwarmWorker, evaluate, load_corpus
+from leviathan_sim.verifier import replay_and_verify
 
 LOSS_CEILING = 12.0
 
@@ -297,6 +298,9 @@ def main():
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--sparse", action="store_true")
     parser.add_argument("--sparse-density", type=float, default=0.02)
+    parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--drift", type=float, default=0.01)
+    parser.add_argument("--band", type=float, default=0.05)
     args = parser.parse_args()
     rounds = 3 if args.smoke else args.rounds
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
@@ -304,6 +308,9 @@ def main():
     corpus = load_corpus(base / "data" / "shakespeare.txt")
     probe = build_model(corpus.vocab_size, args.block_size, seed=7, device=device)
     print(f"device={device.type} vocab={corpus.vocab_size} params={parameter_count(probe):,}")
+    if args.verify:
+        run_verify_experiment(args, corpus, device, base)
+        return
     if args.sparse:
         run_sparse_comparison(args, corpus, rounds, device, base, probe)
         return
@@ -350,6 +357,84 @@ def main():
     plot_loss_curves(results, out_dir / f"{prefix}loss_curves.png")
     plot_security_economics(results, calibration, out_dir / f"{prefix}security_economics.png")
     print(f"wrote {out_dir / (prefix + 'results.json')}")
+
+
+def run_verify_experiment(args, corpus, device, base):
+    n_workers = 10
+    model = build_model(corpus.vocab_size, args.block_size, seed=7, device=device)
+    theta = parameters_to_vector(model.parameters()).detach().clone()
+    workers = [
+        SwarmWorker(
+            wid, corpus, n_workers, True, args.inner_steps, 2e-3,
+            args.batch_size, args.block_size, 100 + wid, device,
+        )
+        for wid in range(n_workers)
+    ]
+    tamper = {1: "sign_flip", 4: "gaussian", 7: "lazy"}
+    generator = torch.Generator(device="cpu").manual_seed(4242)
+    rows = []
+    for worker in workers:
+        honest = worker.local_round(theta, model, 0).delta
+        if worker.wid in tamper:
+            attack = tamper[worker.wid]
+            if attack == "sign_flip":
+                submitted = -5.0 * honest
+            elif attack == "gaussian":
+                submitted = (torch.randn(honest.shape, generator=generator) * float(honest.abs().mean().cpu())).to(honest.device)
+            else:
+                submitted = torch.zeros_like(honest)
+            kind = attack
+        else:
+            drift = torch.randn(honest.shape, generator=generator).to(honest.device)
+            drift = drift / torch.linalg.vector_norm(drift) * torch.linalg.vector_norm(honest) * args.drift
+            submitted = honest + drift
+            kind = "honest"
+        verdict = replay_and_verify(worker, model, theta, 0, submitted, args.band)
+        rows.append({"wid": worker.wid, "kind": kind, "distance": verdict.distance, "fraud": verdict.fraud})
+        print(f"worker {worker.wid:2d} {kind:9s} distance={verdict.distance:.4f} fraud={verdict.fraud}")
+
+    honest_rows = [r for r in rows if r["kind"] == "honest"]
+    cheat_rows = [r for r in rows if r["kind"] != "honest"]
+    honest_fp = sum(1 for r in honest_rows if r["fraud"])
+    cheat_caught = sum(1 for r in cheat_rows if r["fraud"])
+    print(
+        f"band={args.band} drift={args.drift} honest_false_positives={honest_fp}/{len(honest_rows)} "
+        f"cheaters_caught={cheat_caught}/{len(cheat_rows)}"
+    )
+    out_dir = base / "out"
+    out_dir.mkdir(exist_ok=True)
+    payload = {
+        "config": {"band": args.band, "drift": args.drift, "workers": n_workers},
+        "rows": rows,
+        "honest_false_positives": honest_fp,
+        "cheaters_caught": cheat_caught,
+    }
+    (out_dir / "verify_results.json").write_text(json.dumps(payload, indent=2))
+    plot_verify(rows, args.band, args.drift, out_dir / "verify.png")
+    print(f"wrote {out_dir / 'verify_results.json'}")
+
+
+def plot_verify(rows, band, drift, out_path: Path):
+    fig, ax = plt.subplots(figsize=(11, 4.6), facecolor=SURFACE)
+    style_axes(ax)
+    colors = {"honest": PALETTE[1], "sign_flip": PALETTE[5], "gaussian": PALETTE[7], "lazy": PALETTE[3]}
+    ordered = sorted(rows, key=lambda r: r["wid"])
+    positions = range(len(ordered))
+    heights = [max(r["distance"], 1e-3) for r in ordered]
+    bar_colors = [colors[r["kind"]] for r in ordered]
+    ax.bar(list(positions), heights, color=bar_colors, width=0.7)
+    ax.axhline(band, color=INK_SECONDARY, linewidth=1.2, linestyle="--")
+    ax.annotate(f"tolerance band {band}", xy=(0.1, band * 1.15), color=INK_SECONDARY, fontsize=9)
+    ax.set_yscale("log")
+    ax.set_xticks(list(positions), [f"w{r['wid']}\n{r['kind']}" for r in ordered], color=INK_SECONDARY, fontsize=7)
+    ax.set_ylabel("relative replay distance", color=INK_SECONDARY, fontsize=9)
+    ax.set_title(
+        f"Replay audit: honest drift ~{drift} passes, every attack lands above the band",
+        color=INK, fontsize=12, loc="left", pad=10,
+    )
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=180, facecolor=SURFACE)
+    plt.close(fig)
 
 
 SPARSE_KEYS = [

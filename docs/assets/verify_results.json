@@ -1,0 +1,71 @@
+{
+  "config": {
+    "band": 0.05,
+    "drift": 0.01,
+    "workers": 10
+  },
+  "rows": [
+    {
+      "wid": 0,
+      "kind": "honest",
+      "distance": 0.010000021196901798,
+      "fraud": false
+    },
+    {
+      "wid": 1,
+      "kind": "sign_flip",
+      "distance": 5.999999523162842,
+      "fraud": true
+    },
+    {
+      "wid": 2,
+      "kind": "honest",
+      "distance": 0.010000012814998627,
+      "fraud": false
+    },
+    {
+      "wid": 3,
+      "kind": "honest",
+      "distance": 0.010000000707805157,
+      "fraud": false
+    },
+    {
+      "wid": 4,
+      "kind": "gaussian",
+      "distance": 1.3465467691421509,
+      "fraud": true
+    },
+    {
+      "wid": 5,
+      "kind": "honest",
+      "distance": 0.010000019334256649,
+      "fraud": false
+    },
+    {
+      "wid": 6,
+      "kind": "honest",
+      "distance": 0.009999995119869709,
+      "fraud": false
+    },
+    {
+      "wid": 7,
+      "kind": "lazy",
+      "distance": 1.0,
+      "fraud": true
+    },
+    {
+      "wid": 8,
+      "kind": "honest",
+      "distance": 0.009999996051192284,
+      "fraud": false
+    },
+    {
+      "wid": 9,
+      "kind": "honest",
+      "distance": 0.009999992325901985,
+      "fraud": false
+    }
+  ],
+  "honest_false_positives": 0,
+  "cheaters_caught": 3
+}
