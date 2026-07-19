@@ -1,0 +1,13 @@
+[project]
+name = "leviathan-sim"
+version = "0.1.0"
+description = "Byzantine-robust swarm training measured on real transformer gradients"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch>=2.4",
+    "numpy>=2.0",
+    "matplotlib>=3.9",
+]
+
+[tool.uv]
+package = false
