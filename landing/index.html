@@ -215,9 +215,9 @@
   footer a { color: var(--ink-soft); text-decoration: none; }
   footer a:hover { color: var(--verdigris); }
 
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+  body.reveal-ready .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  body.reveal-ready .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { body.reveal-ready .reveal { opacity: 1; transform: none; transition: none; } }
 
   @media (max-width: 760px) {
     body { font-size: 17px; }
@@ -488,8 +488,13 @@ classDiagram
   apply(initial);
   toggle.addEventListener('click', () => apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (Math.min(i, 4) * 45) + 'ms'; io.observe(el); });
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && reveals.length) {
+    document.body.classList.add('reveal-ready');
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach((el, i) => { el.style.transitionDelay = (Math.min(i, 4) * 45) + 'ms'; io.observe(el); });
+    setTimeout(() => reveals.forEach((el) => el.classList.add('in')), 2500);
+  }
 </script>
