@@ -69,6 +69,16 @@ Nondeterminism sources to absorb in the tolerance band:
 - Centralized local-testnet needs tmux (not installed yet) and libtorch (LIBTORCH_USE_PYTORCH=1 plus DYLD_LIBRARY_PATH to a venv torch/lib on macOS; sim/.venv has torch 2.13, tch-fork compatibility unverified). Dummy path exists: Checkpoint::Dummy + DummyDataProvider + DummyModel (init.rs:215-291); candidate configs under config/test and config/solana-test
 - Anchor pinned to git rev a7a23eea (0.30.1 line); program IDs come from declare_id!, Anchor.toml has no programs map
 
-## Program IDs to regenerate for our deploy
+## Devnet deployment, 2026-07-19
 
-coordinator 4SHugWq..., authorizer PsyAUmhp..., treasurer EnU7DRx..., mining-pool CQy5JKR2..., distributor GQEX84La... (upstream IDs; 1.3 replaces them with our keypairs).
+| program | id |
+|---|---|
+| coordinator | JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN |
+| authorizer | 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv |
+| treasurer | 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8 |
+
+Collateral mint BWLv1Fj5RKJbcr3ZMLVKhviFq1i3tq6afgVS2ngyot3X (0 decimals, 1M minted). Deploy wallet and upgrade authority HYXmvGi8SFn7GdGLA2m7YVUxqqwv3rYy7wYhwZ4EoaYn (devnet-only wallet, keypair at ~/.config/solana/leviathan-devnet.json). Program keypairs backed up at ~/.config/solana/leviathan-program-keys/. Run leviathan-dev created permissionless through the treasurer CPI path (rewards topped up, earning 10 / slashing 10 future epoch rates, light config, resumed) and sits in WaitingForMembers.
+
+Deploy recipe: `RUN_ID=... KEY_FILE=... RPC=https://api.devnet.solana.com WS_RPC=wss://api.devnet.solana.com ./scripts/deploy-solana-test.sh --treasurer` then `TREASURER_ARGS="--treasurer-collateral-mint <mint>" ./scripts/create-permissionless-run.sh --treasurer` with the same env. Builds use --no-idl (anchor idl generation trips over a proc-macro2 toolchain mismatch; host cargo check and memnet tests are unaffected). Mainnet gets freshly generated program IDs; these devnet keypairs live in the private repo history, acceptable for devnet only.
+
+Upstream IDs for reference: coordinator 4SHugWq..., authorizer PsyAUmhp..., treasurer EnU7DRx..., mining-pool CQy5JKR2..., distributor GQEX84La...

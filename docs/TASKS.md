@@ -16,7 +16,7 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 
 - [x] 1.1 Fork bootstrap: private mirror wienerlabs/leviathan-net live, upstream remote wired, chain-side crates compile clean, memnet suite 14/14 in 0.93s (libtorch-dependent centralized smoke folded into the 1.9 prerequisite)
 - [x] 1.2 Code map: docs/CODEMAP.md distills the three-track deep read; dead-code inventory confirmed at file:line, bond attach decision locked (treasurer custody + Client._unused slot)
-- [ ] 1.3 Devnet deploy of the inherited programs under our own program IDs
+- [x] 1.3 Devnet deploy under our own program IDs: coordinator JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN, authorizer 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv, treasurer 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8, collateral mint BWLv1Fj5RKJbcr3ZMLVKhviFq1i3tq6afgVS2ngyot3X; permissionless run leviathan-dev live in WaitingForMembers via the treasurer CPI path
 - [ ] 1.4 Bond account: deposit on join, challenge-window exit, refund path, anchor tests
 - [ ] 1.5 Audit assignment: deterministic lottery from the round seed at probability p, shuffled-index verifier committee reusing the witness selection code
 - [ ] 1.6 Dispute, verdict, slash: fraud claim instruction, committee vote, slash routing with reporter bounty and treasury remainder, ejection the treasurer actually reads
