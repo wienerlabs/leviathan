@@ -14,15 +14,15 @@
 
 Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two-GPU tolerance-band replay reproduced.
 
-- [ ] 1.1 Fork bootstrap: private mirror of PsycheFoundation/nousnet as wienerlabs/leviathan-net, upstream remote wired, workspace builds, centralized backend local smoke
-- [ ] 1.2 Code map: shared/coordinator state machine plus the five Anchor programs read end to end; dead-code inventory confirmed at file:line (Verifier todo, Ejected never set, treasurer ignoring slashed)
+- [x] 1.1 Fork bootstrap: private mirror wienerlabs/leviathan-net live, upstream remote wired, chain-side crates compile clean, memnet suite 14/14 in 0.93s (libtorch-dependent centralized smoke folded into the 1.9 prerequisite)
+- [x] 1.2 Code map: docs/CODEMAP.md distills the three-track deep read; dead-code inventory confirmed at file:line, bond attach decision locked (treasurer custody + Client._unused slot)
 - [ ] 1.3 Devnet deploy of the inherited programs under our own program IDs
 - [ ] 1.4 Bond account: deposit on join, challenge-window exit, refund path, anchor tests
 - [ ] 1.5 Audit assignment: deterministic lottery from the round seed at probability p, shuffled-index verifier committee reusing the witness selection code
 - [ ] 1.6 Dispute, verdict, slash: fraud claim instruction, committee vote, slash routing with reporter bounty and treasury remainder, ejection the treasurer actually reads
 - [ ] 1.7 Aggregation adaptation: centered clip plus excision over SparseLoCo-compressed pseudo-gradients, validated back in sim/
 - [ ] 1.8 Verifier daemon v0: replay from (checkpoint, seed, data), tolerance-band comparison, fraud proof submission
-- [ ] 1.9 Four-process local swarm against devnet with a fabricated-delta malicious mode
+- [ ] 1.9 Four-process local swarm against devnet with a fabricated-delta malicious mode (prereq: tmux install plus libtorch env, LIBTORCH_USE_PYTORCH=1 with DYLD_LIBRARY_PATH to a venv torch/lib, tch-fork compatibility check, dummy-config smoke first)
 - [ ] 1.10 Conviction demo capture plus two-GPU replay reproducibility (Mac plus rented CUDA instance, first band calibration)
 - [ ] 1.p Parallel track: manifesto landing page, name finalization with domain and handle check
 
