@@ -1,0 +1,48 @@
+{
+  "config": {
+    "rounds": 30,
+    "workers": 16,
+    "device": "mps",
+    "target_density": 0.02,
+    "chunk": 64,
+    "model_parameters": 826368
+  },
+  "comparison": [
+    {
+      "key": "honest-mean-iid",
+      "label": "Honest swarm, mean",
+      "dense_final": 2.1750007569789886,
+      "sparse_final": 2.876294434070587,
+      "dense_mal_sel": null,
+      "sparse_mal_sel": null,
+      "sparse_density": 0.015625
+    },
+    {
+      "key": "signflip-clip-iid",
+      "label": "Sign flip 5/16 vs clip",
+      "dense_final": 2.2014037519693375,
+      "sparse_final": 2.8804865032434464,
+      "dense_mal_sel": 0.02666666666666667,
+      "sparse_mal_sel": 0.0,
+      "sparse_density": 0.015625
+    },
+    {
+      "key": "alie-clip-audit-iid",
+      "label": "ALIE 5/16 vs clip + audit",
+      "dense_final": 2.193801164627075,
+      "sparse_final": 2.9020350873470306,
+      "dense_mal_sel": 1.0,
+      "sparse_mal_sel": 1.0,
+      "sparse_density": 0.015625
+    },
+    {
+      "key": "honest-clip-noniid",
+      "label": "Honest non-IID, clip",
+      "dense_final": 2.2219826877117157,
+      "sparse_final": 2.9407764673233032,
+      "dense_mal_sel": null,
+      "sparse_mal_sel": null,
+      "sparse_density": 0.015624924388248473
+    }
+  ]
+}

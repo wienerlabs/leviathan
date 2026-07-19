@@ -2,7 +2,7 @@ import argparse
 import json
 import math
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 import matplotlib
@@ -16,6 +16,7 @@ from leviathan_sim.aggregators import CenteredClipAggregator, MeanAggregator
 from leviathan_sim.attacks import InjectionConfig, Injector
 from leviathan_sim.economy import EconomyConfig, StakeLedger, calibration_table
 from leviathan_sim.model import build_model, parameter_count
+from leviathan_sim.sparse import chunked_topk_sign
 from leviathan_sim.swarm import NesterovOuter, SwarmWorker, evaluate, load_corpus
 
 LOSS_CEILING = 12.0
@@ -74,6 +75,8 @@ def run_scenario(
     batch_size: int,
     block_size: int,
     device: torch.device,
+    sparse_density: float | None = None,
+    sparse_chunk: int = 64,
 ) -> dict:
     model = build_model(corpus.vocab_size, block_size, seed=7, device=device)
     theta = parameters_to_vector(model.parameters()).detach().clone()
@@ -108,9 +111,16 @@ def run_scenario(
     val_losses: list[float] = []
     selected_counts = {wid: 0 for wid in worker_ids}
     seen_counts = {wid: 0 for wid in worker_ids}
+    density_samples: list[float] = []
     for round_index in range(rounds):
         active_workers = [w for w in workers if w.wid in ledger.active_ids]
         updates = {w.wid: w.local_round(theta, model, round_index) for w in active_workers}
+        if sparse_density is not None:
+            for wid, update in updates.items():
+                compressed = chunked_topk_sign(update.delta, sparse_density, sparse_chunk, True)
+                if round_index == 0:
+                    density_samples.append(float((compressed != 0).float().mean()))
+                updates[wid] = replace(update, delta=compressed)
         attacked, report = injector.apply(updates)
         deltas = {wid: u.delta for wid, u in attacked.items()}
         delta_agg, mask = aggregator.aggregate(deltas)
@@ -136,6 +146,7 @@ def run_scenario(
         "honest_selection_rate": honest_rate,
         "malicious_selection_rate": malicious_rate,
         "honest_fpr": 1.0 - honest_rate if honest_rate is not None else None,
+        "mean_density": mean_of(density_samples) if density_samples else None,
         "caught_rounds": dict(sorted(ledger.caught.items())),
         "honest_mean_pnl": mean_of([pnl[wid] for wid in honest]),
         "malicious_mean_pnl": mean_of([pnl[wid] for wid in malicious]),
@@ -284,6 +295,8 @@ def main():
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--block-size", type=int, default=128)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--sparse", action="store_true")
+    parser.add_argument("--sparse-density", type=float, default=0.02)
     args = parser.parse_args()
     rounds = 3 if args.smoke else args.rounds
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
@@ -291,6 +304,9 @@ def main():
     corpus = load_corpus(base / "data" / "shakespeare.txt")
     probe = build_model(corpus.vocab_size, args.block_size, seed=7, device=device)
     print(f"device={device.type} vocab={corpus.vocab_size} params={parameter_count(probe):,}")
+    if args.sparse:
+        run_sparse_comparison(args, corpus, rounds, device, base, probe)
+        return
     results: dict[str, dict] = {}
     for scenario in SCENARIOS:
         started = time.time()
@@ -334,6 +350,94 @@ def main():
     plot_loss_curves(results, out_dir / f"{prefix}loss_curves.png")
     plot_security_economics(results, calibration, out_dir / f"{prefix}security_economics.png")
     print(f"wrote {out_dir / (prefix + 'results.json')}")
+
+
+SPARSE_KEYS = [
+    "honest-mean-iid",
+    "signflip-clip-iid",
+    "alie-clip-audit-iid",
+    "honest-clip-noniid",
+]
+
+
+def run_sparse_comparison(args, corpus, rounds, device, base, probe):
+    scenarios = {s.key: s for s in SCENARIOS}
+    rows = []
+    for key in SPARSE_KEYS:
+        scenario = scenarios[key]
+        dense = run_scenario(
+            scenario, corpus, rounds, args.workers, args.inner_steps,
+            args.batch_size, args.block_size, device,
+        )
+        sparse = run_scenario(
+            scenario, corpus, rounds, args.workers, args.inner_steps,
+            args.batch_size, args.block_size, device,
+            sparse_density=args.sparse_density, sparse_chunk=64,
+        )
+        row = {
+            "key": key,
+            "label": scenario.label,
+            "dense_final": dense["final_val_loss"],
+            "sparse_final": sparse["final_val_loss"],
+            "dense_mal_sel": dense["malicious_selection_rate"],
+            "sparse_mal_sel": sparse["malicious_selection_rate"],
+            "sparse_density": sparse["mean_density"],
+        }
+        rows.append(row)
+        print(
+            f"{key}: dense_final={row['dense_final']:.3f} sparse_final={row['sparse_final']:.3f} "
+            f"dense_mal={fmt(row['dense_mal_sel'])} sparse_mal={fmt(row['sparse_mal_sel'])} "
+            f"density={fmt(row['sparse_density'])}"
+        )
+    out_dir = base / "out"
+    out_dir.mkdir(exist_ok=True)
+    prefix = "smoke_sparse_" if args.smoke else "sparse_"
+    payload = {
+        "config": {
+            "rounds": rounds, "workers": args.workers, "device": device.type,
+            "target_density": args.sparse_density, "chunk": 64,
+            "model_parameters": parameter_count(probe),
+        },
+        "comparison": rows,
+    }
+    (out_dir / f"{prefix}results.json").write_text(json.dumps(payload, indent=2))
+    plot_sparse_comparison(rows, args.sparse_density, out_dir / f"{prefix}comparison.png")
+    print(f"wrote {out_dir / (prefix + 'results.json')}")
+
+
+def plot_sparse_comparison(rows, target_density, out_path: Path):
+    fig, (left, right) = plt.subplots(1, 2, figsize=(12.5, 4.6), facecolor=SURFACE)
+    labels = [r["label"] for r in rows]
+    x = range(len(rows))
+    width = 0.38
+    style_axes(left)
+    left.bar([i - width / 2 for i in x], [r["dense_final"] for r in rows], width,
+             color=PALETTE[0], label="dense delta")
+    left.bar([i + width / 2 for i in x], [r["sparse_final"] for r in rows], width,
+             color=PALETTE[1], label=f"sparse {int(target_density * 100)}% + sign")
+    left.set_xticks(list(x), labels, color=INK_SECONDARY, fontsize=8, rotation=20, ha="right")
+    left.set_ylabel("final validation loss", color=INK_SECONDARY, fontsize=9)
+    left.set_title("Same defense, compressed transport", color=INK, fontsize=11, loc="left", pad=10)
+    left.legend(frameon=False, fontsize=8, labelcolor=INK_SECONDARY)
+    style_axes(right)
+    sel_rows = [r for r in rows if r["dense_mal_sel"] is not None]
+    sx = range(len(sel_rows))
+    right.bar([i - width / 2 for i in sx], [r["dense_mal_sel"] for r in sel_rows], width,
+              color=PALETTE[5], label="dense")
+    right.bar([i + width / 2 for i in sx], [r["sparse_mal_sel"] for r in sel_rows], width,
+              color=PALETTE[7], label="sparse")
+    right.set_xticks(list(sx), [r["label"] for r in sel_rows], color=INK_SECONDARY, fontsize=8, rotation=20, ha="right")
+    right.set_ylim(0, 1.05)
+    right.set_ylabel("malicious selection rate", color=INK_SECONDARY, fontsize=9)
+    right.set_title("Coalition still rejected under compression", color=INK, fontsize=11, loc="left", pad=10)
+    right.legend(frameon=False, fontsize=8, labelcolor=INK_SECONDARY)
+    fig.suptitle(
+        "Clip + excision holds in the SparseLoCo transport domain",
+        color=INK, fontsize=13, x=0.01, ha="left",
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(out_path, dpi=180, facecolor=SURFACE)
+    plt.close(fig)
 
 
 def fmt(value: float | None) -> str:
