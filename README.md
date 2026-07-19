@@ -22,6 +22,25 @@ Every live network picked one column. Nobody picked both:
 
 Three security layers, each covering the others' gap: robust aggregation bounds damage in the round it happens, random replay audits price lying, bonds make sybil a cost. Economic security with published parameters, never a cryptographic overclaim.
 
+## Phase 0 results
+
+30 outer rounds, 16 workers, a 5/16 Byzantine coalition, real gradients from an 826k-parameter GPT:
+
+| scenario | final val loss | outcome |
+|---|---|---|
+| Honest swarm, mean | 2.175 | reference |
+| Sign flip 5/16 vs mean | 12.0, diverged | naive aggregation destroyed |
+| Sign flip 5/16 vs clip + excision | 2.203 | neutralized; malicious acceptance 3% |
+| ALIE 5/16 vs clip | 2.190 | stealth coalition accepted 100%, damage 0.7% |
+| ALIE 5/16 vs clip + audit p=0.1 | 2.194 | all 5 cheaters slashed |
+| Honest non-IID, clip | 2.222 | zero honest false positives |
+
+![loss curves](docs/assets/loss_curves.png)
+
+The break-even bond law held on a real transformer run: at audit probability p = 0.1 the theoretical expected catch time is 1/p = 10 rounds, and the observed mean across the five convictions was 9.8 rounds. Robust aggregation bounds what a coalition can do while it lives; the audit lottery ends its life on schedule.
+
+![security economics](docs/assets/security_economics.png)
+
 ## This repository
 
 Phase 0: the proof that the security economics survive contact with real transformer gradients.

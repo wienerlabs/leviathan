@@ -45,15 +45,15 @@ Proof of Gradient: work is rewarded if and only if it was committed before aggre
 
 Three layers, each covering the others' gap:
 
-1. Robust aggregation bounds damage. Centered clipping with excision caps any contribution's influence radius in the round it happens. Ported from Condorcet and re-validated on real transformer gradients in sim/: naive mean collapses under a 5/16 sign-flip coalition while clip plus excision tracks the honest baseline and ejects the coalition from selection.
-2. Replay audits price lying. Each contribution is audited with probability p. Local rounds are replayable pure functions, so a mismatch beyond the tolerance band is a binary fraud proof judged by a bonded committee.
+1. Robust aggregation bounds damage. Centered clipping with excision caps any contribution's influence radius in the round it happens. Ported from Condorcet and re-validated on real transformer gradients in sim/: a 5/16 sign-flip coalition drives naive mean to divergence (12.0 final loss) while clip plus excision finishes at 2.203 against a 2.175 honest reference and admits only 3% of malicious contributions.
+2. Replay audits price lying. Each contribution is audited with probability p. Local rounds are replayable pure functions, so a mismatch beyond the tolerance band is a binary fraud proof judged by a bonded committee. On the sim's ALIE run at p = 0.1, all five stealth cheaters were caught at a mean of 9.8 rounds against the 1/p = 10 theoretical expectation.
 3. Bonds make sybil a cost. Break-even bond = reward x (1-p)/p. At p = 0.1 the bond is 9 rounds of reward; expected time to catch a persistent cheater is 1/p rounds; a slashed identity re-enters only by posting a fresh bond. Security is self-funding under attack: slashed stake pays the verifiers hunting it.
 
 What we do not claim: cryptographic proof of training. The uncaught-rate, the tolerance band width, and the bond curve are published dashboard metrics, because the honest version of this system is the only durable one. Stealth attacks like ALIE that hide inside honest variance defeat aggregation alone; they are exactly what the audit layer exists to catch, and the sim quantifies both halves.
 
 ## 6. Economics
 
-Calibration anchors rewards to compute reality: reward per round = 1.2x the H100-market cost of the round's FLOPs. The sim ships the full table; the shape is what matters. At audit rate p = 0.1, bonds stay under ten rounds of reward at every scale from 125M to 7B, an entry cost measured in tens of dollars for volunteers and low thousands for datacenter suppliers, while making persistent cheating expected-negative.
+Calibration anchors rewards to compute reality: reward per round = 1.2x the H100-market cost of the round's FLOPs. The sim ships the full table; the shape is what matters. At audit rate p = 0.1 the break-even bond is nine rounds of reward at every scale: about $0.13 per worker for the 125M proof run, $2.60 for the 1B genesis run, $36 for the 7B scale run. Entry stays cheap for volunteers while persistent cheating is expected-negative from the first round.
 
 Flywheel: inference fees (vLLM workers verified by TOPLOC activation commitments) flow to the treasury; the treasury funds the next training run; futarchy (Wienerpad) decides what the network trains next.
 
