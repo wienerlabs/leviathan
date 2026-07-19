@@ -41,6 +41,15 @@ The break-even bond law held on a real transformer run: at audit probability p =
 
 ![security economics](docs/assets/security_economics.png)
 
+## Phase 1 progress
+
+The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0) at wienerlabs/leviathan-net, carrying the layer upstream designed but left unimplemented: bonds, replay audits, slashing.
+
+- 1.1 Fork bootstrap: mirror live, chain-side crates compile clean, upstream memnet suite 14/14 with no validator
+- 1.2 Code map: docs/CODEMAP.md; dead code confirmed at file:line (verifier dispatch is a todo, Ejected never set, slashed never read), bond attach points locked
+- 1.3 Devnet deployment under our own program IDs: coordinator JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN, authorizer 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv, treasurer 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8; permissionless run leviathan-dev live in WaitingForMembers through the treasurer CPI path
+- Next: 1.4 bond custody in the treasurer, then the audit lottery, dispute-driven slashing, the verifier daemon, and the recorded conviction demo
+
 ## This repository
 
 Phase 0: the proof that the security economics survive contact with real transformer gradients.
