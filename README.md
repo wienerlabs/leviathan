@@ -22,6 +22,74 @@ Every live network picked one column. Nobody picked both:
 
 Three security layers, each covering the others' gap: robust aggregation bounds damage in the round it happens, random replay audits price lying, bonds make sybil a cost. Economic security with published parameters, never a cryptographic overclaim.
 
+## Architecture
+
+```mermaid
+classDiagram
+    class Participant {
+        +GPU_Resources
+        +post_bond()
+        +submit_gradient()
+    }
+    class Treasurer {
+        +participant_bond_deposit()
+        +request_withdraw()
+        +finalize_withdraw()
+        +vault_management()
+    }
+    class P2P_Mesh {
+        <<Iroh / DisTrO>>
+        +compressed_tensors
+        +sparse_loco_recipe
+        +diloco_loop
+    }
+    class Solana_Blockchain {
+        <<Network Substrate>>
+        +Coordinator_Program
+        +Treasurer_Program
+        +Authorizer_Program
+        +settle_slashing()
+    }
+    class Coordinator {
+        +verification_percent
+        +audit_selection(p_probability)
+        +derive_assignments(seed)
+    }
+    class Audit_System {
+        +deterministic_replay()
+        +tolerance_band_check()
+        +conviction_logic()
+    }
+    class Robust_Aggregation {
+        +centered_clipping()
+        +outlier_excision()
+        +bound_damage()
+    }
+    class Security_Layers {
+        <<Economic and Robustness>>
+        +Robust_Aggregation
+        +Replay_Audits
+        +Bonded_Slashing
+    }
+    class Phase0_Results {
+        +Honest_Loss_2_175
+        +Byzantine_Resilience
+        +Mean_Catch_Time_9_8_rounds
+    }
+
+    Participant "1" -- "1" Treasurer : bonded_participation
+    Participant "N" -- "1" P2P_Mesh : mesh_communication
+    Treasurer --> Solana_Blockchain : settle
+    Treasurer --> Security_Layers : layer_3_sybil_cost
+    Coordinator --* Solana_Blockchain
+    Coordinator --> Audit_System : triggers_p_0_1
+    Audit_System --> Robust_Aggregation : provides_verification
+    Audit_System --> Security_Layers : layer_2
+    Robust_Aggregation --> Security_Layers : layer_1
+    Security_Layers --> Solana_Blockchain : execute_slash
+    Phase0_Results ..> Security_Layers : validates_parameters
+```
+
 ## Phase 0 results
 
 30 outer rounds, 16 workers, a 5/16 Byzantine coalition, real gradients from an 826k-parameter GPT:
@@ -47,8 +115,14 @@ The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0)
 
 - 1.1 Fork bootstrap: mirror live, chain-side crates compile clean, upstream memnet suite 14/14 with no validator
 - 1.2 Code map: docs/CODEMAP.md; dead code confirmed at file:line (verifier dispatch is a todo, Ejected never set, slashed never read), bond attach points locked
-- 1.3 Devnet deployment under our own program IDs: coordinator JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN, authorizer 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv, treasurer 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8; permissionless run leviathan-dev live in WaitingForMembers through the treasurer CPI path
-- Next: 1.4 bond custody in the treasurer, then the audit lottery, dispute-driven slashing, the verifier daemon, and the recorded conviction demo
+- 1.3 Devnet deployment under our own program IDs: coordinator JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN, authorizer 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv, treasurer 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8
+- 1.4 Bonded participation in the treasurer: deposit, challenge-window withdraw, and settlement that forfeits slashed collateral into the run vault
+- 1.5 Audit lottery: verifier-to-target assignments derived from the round seed, deterministic and replayable, scaling with verification_percent
+- 1.6 Dispute and slash: the coordinator's slashed counter that upstream wrote but no program read now has a live producer feeding the treasurer settlement
+- 1.7 Aggregation holds in the SparseLoCo transport domain: the coalition is rejected even harder under 2% compression
+- 1.8 Verifier core: tolerance-band replay separates 1% cross-hardware drift from every attack class, zero honest false positives
+- 1.10 Live devnet conviction: the whole loop runs on real chain (bond posted 500, slashed 200 written on-chain, bond recovered 300, forfeit 200 retained), matching the deterministic memnet proof (17/17 suites)
+- Remaining: 1.9 real training swarm, gated on the libtorch and NousResearch tch toolchain bring-up (the trainer fuel, not the trust machine)
 
 ## This repository
 
