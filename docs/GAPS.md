@@ -5,7 +5,8 @@ against what the code and task ladder actually deliver. Ordered by how much each
 Items marked (T) were folded into docs/TASKS.md.
 
 Status update, same day: the gaps closable in this repo were closed — the within-band damage
-scenario (`--band-sweep`, with explicit replay evidence that audits pass by construction), the
+scenario (`--band-sweep`: +0.019 loss at the 0.05 operating band for a 5/16 coalition, ~0.9%,
+roughly linear in band width, with explicit replay evidence that audits pass by construction), the
 zero-fraud verifier burn projection and Genesis operating point in economy.py, a 28-test sim
 suite with CI, SECURITY.md, CONTRIBUTING.md, and the doc-drift fixes (PRD as-built note, README
 privacy line). Still open: the LICENSE decision (owner call), and everything that lives in

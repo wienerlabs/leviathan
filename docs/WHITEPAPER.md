@@ -67,7 +67,7 @@ Flywheel: inference fees (vLLM workers verified by TOPLOC activation commitments
 
 ## 8. Honest limitations
 
-- Economic security has a floor: coalitions below the excision threshold that also stay inside the tolerance band can bias training slowly. The published band is the adversary's budget; we choose it with the sim, and we would rather publish that number than pretend it is zero.
+- Economic security has a floor: coalitions below the excision threshold that also stay inside the tolerance band can bias training slowly. The published band is the adversary's budget; we choose it with the sim, and we would rather publish that number than pretend it is zero. The number, measured: a 5/16 within-band coalition passes every replay audit by construction and buys +0.019 final loss (~0.9% of the 2.173 honest reference) at the 0.05 operating band, scaling roughly linearly to +0.063 at band 0.2. This is what tight per-hardware band calibration is worth.
 - A 1B volunteer-trained model is not a frontier model. The claim is a proven path, not an arrived destination: each run scales the trust machine that a frontier-scale run requires.
 - Solana congestion or program bugs stall rounds; the coordinator inherits Psyche's pause and resume machinery, and the fork keeps its centralized backend for disaster recovery.
 - Token design must survive regulation; utility-first, no yield promises, legal review before TGE.

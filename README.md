@@ -109,6 +109,10 @@ The break-even bond law held on a real transformer run: at audit probability p =
 
 ![security economics](docs/assets/security_economics.png)
 
+The published tolerance band is, by construction, the adversary's undetectable budget — so the sim prices it. A 5/16 coalition biasing against the honest mean at 0.9x the band passes every replay audit (measured distance exactly 0.9x band, zero fraud verdicts) and is fully accepted by the aggregator; what it buys is the damage curve below. At the operating band of 0.05 the whole coalition purchases +0.019 final loss against the 2.173 honest reference, about 0.9%, and the cost grows roughly linearly with band width. That number is why the band is a published dashboard metric and why calibrating it tightly per hardware class is a Genesis-gating task.
+
+![band sweep](docs/assets/band_sweep.png)
+
 ## Phase 1 progress
 
 The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0) at wienerlabs/leviathan-net, carrying the layer upstream designed but left unimplemented: bonds, replay audits, slashing.
