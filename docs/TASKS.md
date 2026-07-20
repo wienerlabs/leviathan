@@ -29,15 +29,28 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 ## Phase 2, Genesis Run
 
 - [ ] Tolerance band calibration harness across hardware classes (4090, 3090, A100, H100)
+- [ ] Two-GPU tolerance-band replay reproduction (Phase 1 exit criterion carried forward; folded into 1.9 but never run on two distinct GPUs)
+- [x] Sim: within-band adversary budget scenario — `--band-sweep` runs a 5/16 coalition that biases against the honest mean at 0.9x the published band; explicit replay evidence shows the audit passes by construction (distance = 0.9 x band, fraud=false) at every band width, so aggregation is the only layer that pushes back. Measured over 30 rounds vs the 2.173 honest reference: +0.012 loss at band 0.02, +0.019 at 0.05 (the operating point, ~0.9%), +0.032 at 0.1, +0.063 at 0.2 — roughly linear in band width, coalition accepted 100% throughout (docs/assets/band_sweep.png)
+- [ ] Production verifier daemon: subscribe as Committee::Verifier, replay real gradients, call run_slash (decision core done in 1.8; shares the 1.9 libtorch toolchain)
+- [ ] Multi-epoch re-join resilience (deferred out of 1.9; prerequisite for any churn run)
+- [x] Verifier economics: economy.py gains the zero-fraud projection (audit fee = 1.1x per-contribution H100 cost; treasury burn ~9.2% of rewards at p=0.1, preset-independent) and genesis_parameters() publishing the Genesis operating point (1B preset, p=0.1, band 0.05, bond = 9 rounds of reward); both emitted into results.json
+- [ ] Publish the centralized-dispute limitation on the Genesis dashboard (slash_client is main_authority gated until the Phase 3 committee lands)
 - [ ] One-line installer + wallet flow + bond funding UX
 - [ ] Public site: live loss curve, node map, leaderboard, audit/slash feed
 - [ ] Relay infrastructure for non-hole-punchable nodes
+- [x] SECURITY.md responsible-disclosure channel (GitHub private vulnerability reporting; economic-security breaks explicitly in scope, no paid bounty until the program below ships)
 - [ ] Red-team bounty program design
+- [x] CI + tests: .github/workflows/ci.yml runs the 28-test sim suite on CPU torch (aggregation excises the outlier, within-band stays inside the band, replay catches sign-flip/lazy and passes honest, economy math); CONTRIBUTING.md documents setup, experiments and the docs discipline
+- [ ] LICENSE decision (owner call; blocks going public)
 - [ ] 350M run rehearsal with internal nodes, then 1B public run
 
 ## Phase 3, mainnet
 
 - [ ] Legal review of token design
+- [ ] Independent security audit of the Anchor programs (coordinator, treasurer, authorizer) before real bonds
+- [ ] Round randomness hardening: VRF or recent-blockhash commitment replacing sha256(unix_timestamp, slot) (grindable, flagged in CODEMAP.md)
+- [ ] Bonded multi-verifier dispute committee with reporter bounty and treasury remainder, replacing the main_authority resolver (evolution locked in 1.6)
+- [ ] Regenerate program keypairs for mainnet (devnet keypairs live in private repo history, devnet-only per CODEMAP.md)
 - [ ] TGE via Wiener Launchpad rails; distributor program reuse for airdrop and vesting
 - [ ] Real-bond parameters from sim calibration; treasury and endowment wiring
 - [ ] Inference v0: vLLM workers + TOPLOC validation + settlement program

@@ -99,3 +99,53 @@ def calibration_table(audit_probabilities: list[float]) -> list[dict]:
                 }
             )
     return rows
+
+
+def audit_burn_projection(
+    audit_probabilities: list[float],
+    n_workers: int = 100,
+    fee_multiplier: float = 1.1,
+) -> list[dict]:
+    """Zero-fraud equilibrium: with nobody to slash, verifier income is pure
+    treasury burn. A replay audit redoes one contribution's compute, so the fee
+    floor is the per-contribution H100 cost times a verifier margin."""
+    rows = []
+    for preset in PRESETS:
+        cost = h100_round_cost_usd(preset)
+        reward = 1.2 * cost
+        for p in audit_probabilities:
+            fee = fee_multiplier * cost
+            burn = p * n_workers * fee
+            rewards_paid = n_workers * reward
+            rows.append(
+                {
+                    "preset": preset.label,
+                    "audit_probability": p,
+                    "n_workers": n_workers,
+                    "audit_fee_usd": fee,
+                    "expected_audits_per_round": p * n_workers,
+                    "treasury_burn_per_round_usd": burn,
+                    "burn_share_of_rewards": burn / rewards_paid,
+                }
+            )
+    return rows
+
+
+def genesis_parameters(audit_probability: float = 0.1, band: float = 0.05) -> dict:
+    """The published operating point for the Genesis Run testnet, derived from
+    the same (1-p)/p discipline as the calibration table. Values are per worker
+    per the 1B preset; testnet bonds use these numbers denominated in the
+    testnet collateral mint."""
+    preset = next(p for p in PRESETS if p.params_billion == 1.0)
+    cost = h100_round_cost_usd(preset)
+    reward = 1.2 * cost
+    return {
+        "preset": preset.label,
+        "audit_probability": audit_probability,
+        "tolerance_band": band,
+        "round_reward_usd": reward,
+        "bond_usd": break_even_bond(audit_probability, reward),
+        "bond_rounds_of_reward": (1.0 - audit_probability) / audit_probability,
+        "expected_rounds_to_catch": 1.0 / audit_probability,
+        "audit_burn_share_of_rewards": audit_probability * 1.1 / 1.2,
+    }
