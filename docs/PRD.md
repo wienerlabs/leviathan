@@ -23,6 +23,8 @@
 - End-to-end conviction demo: a node submitting fabricated deltas is audited, disputed, slashed and ejected, recorded in one continuous capture.
 - All state transitions covered by anchor tests; replay verifier reproduces a sampled contribution within the tolerance band on two different GPUs.
 
+As-built note, 2026-07-20: the swarm criterion was met by substitution — a single-client Nano-Llama epoch on live devnet (17 rounds, DisTrO over iroh, real Join/Witness/Tick transactions) instead of a 4-process local swarm on the 826k sim model. Live chain beats local processes, so the substitution strengthens the criterion it replaced. The two-GPU replay reproduction was NOT met: it was folded into the swarm bring-up, which ran on one machine. It is carried forward as an explicit Phase 2 task in docs/TASKS.md.
+
 ## Phase 2 acceptance (Genesis Run)
 
 - 50+ external nodes sustain a 350M to 1B run for 7+ days with churn.

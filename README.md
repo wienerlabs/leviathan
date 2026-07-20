@@ -151,4 +151,4 @@ PYTORCH_ENABLE_MPS_FALLBACK=1 uv run python -m leviathan_sim.run --rounds 30
 
 Built on the shoulders of, and differentiated from: Psyche/nousnet (Apache-2.0 fork substrate: Solana coordinator, iroh P2P, Rust DisTrO), SparseLoCo (MIT compression recipe), TOPLOC (MIT inference verification), OVIG (the audit loop's academic validation), Condorcet (wienerlabs: the aggregation and bond-economics research core), DanteGPU (supply), Wienerpad (futarchy governance), zk-lokomotive (Arweave rail).
 
-Private under wienerlabs while Phase 1 lands.
+Private under wienerlabs while the Genesis Run is prepared; going public is gated on the Phase 2 repo-hygiene checklist in docs/TASKS.md (the LICENSE decision is the open item — CI, tests, SECURITY.md and CONTRIBUTING.md are in place).

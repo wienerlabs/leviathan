@@ -14,7 +14,13 @@ from torch.nn.utils import parameters_to_vector
 
 from leviathan_sim.aggregators import CenteredClipAggregator, MeanAggregator
 from leviathan_sim.attacks import InjectionConfig, Injector
-from leviathan_sim.economy import EconomyConfig, StakeLedger, calibration_table
+from leviathan_sim.economy import (
+    EconomyConfig,
+    StakeLedger,
+    audit_burn_projection,
+    calibration_table,
+    genesis_parameters,
+)
 from leviathan_sim.model import build_model, parameter_count
 from leviathan_sim.sparse import chunked_topk_sign
 from leviathan_sim.swarm import NesterovOuter, SwarmWorker, evaluate, load_corpus
@@ -78,6 +84,7 @@ def run_scenario(
     device: torch.device,
     sparse_density: float | None = None,
     sparse_chunk: int = 64,
+    attack_band: float = 0.05,
 ) -> dict:
     model = build_model(corpus.vocab_size, block_size, seed=7, device=device)
     theta = parameters_to_vector(model.parameters()).detach().clone()
@@ -98,7 +105,7 @@ def run_scenario(
         for wid in worker_ids
     ]
     injector = Injector(
-        InjectionConfig(n_malicious=scenario.n_malicious, attack=scenario.attack),
+        InjectionConfig(n_malicious=scenario.n_malicious, attack=scenario.attack, band=attack_band),
         worker_ids,
         seed=11,
     )
@@ -299,6 +306,7 @@ def main():
     parser.add_argument("--sparse", action="store_true")
     parser.add_argument("--sparse-density", type=float, default=0.02)
     parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--band-sweep", action="store_true")
     parser.add_argument("--drift", type=float, default=0.01)
     parser.add_argument("--band", type=float, default=0.05)
     args = parser.parse_args()
@@ -310,6 +318,9 @@ def main():
     print(f"device={device.type} vocab={corpus.vocab_size} params={parameter_count(probe):,}")
     if args.verify:
         run_verify_experiment(args, corpus, device, base)
+        return
+    if args.band_sweep:
+        run_band_sweep(args, corpus, rounds, device, base, probe)
         return
     if args.sparse:
         run_sparse_comparison(args, corpus, rounds, device, base, probe)
@@ -352,6 +363,8 @@ def main():
         },
         "scenarios": results,
         "economy_calibration": calibration,
+        "audit_burn_projection": audit_burn_projection([0.02, 0.05, 0.1, 0.2, 0.3]),
+        "genesis_parameters": genesis_parameters(),
     }
     (out_dir / f"{prefix}results.json").write_text(json.dumps(payload, indent=2))
     plot_loss_curves(results, out_dir / f"{prefix}loss_curves.png")
@@ -433,6 +446,122 @@ def plot_verify(rows, band, drift, out_path: Path):
         color=INK, fontsize=12, loc="left", pad=10,
     )
     fig.tight_layout()
+    fig.savefig(out_path, dpi=180, facecolor=SURFACE)
+    plt.close(fig)
+
+
+BAND_SWEEP = [0.02, 0.05, 0.1, 0.2]
+
+
+def within_band_replay_evidence(args, corpus, device, band: float) -> dict:
+    """One round of explicit replay: a within-band submission must pass the
+    audit at exactly band_margin * band relative distance. This is the proof
+    that layer 2 is blind to this adversary, not an assumption."""
+    n_workers = args.workers
+    model = build_model(corpus.vocab_size, args.block_size, seed=7, device=device)
+    theta = parameters_to_vector(model.parameters()).detach().clone()
+    workers = [
+        SwarmWorker(
+            wid, corpus, n_workers, True, args.inner_steps, 2e-3,
+            args.batch_size, args.block_size, 100 + wid, device,
+        )
+        for wid in range(n_workers)
+    ]
+    updates = {w.wid: w.local_round(theta, model, 0) for w in workers}
+    injector = Injector(
+        InjectionConfig(n_malicious=5, attack="within_band", band=band),
+        list(range(n_workers)),
+        seed=11,
+    )
+    attacked, report = injector.apply(updates)
+    target_wid = min(report.malicious_ids)
+    verdict = replay_and_verify(
+        workers[target_wid], model, theta, 0, attacked[target_wid].delta, band
+    )
+    return {"wid": target_wid, "distance": verdict.distance, "fraud": verdict.fraud}
+
+
+def run_band_sweep(args, corpus, rounds, device, base, probe):
+    honest = run_scenario(
+        Scenario("withinband-honest", "Honest, clip", True, "none", 0, "clip", 0.0),
+        corpus, rounds, args.workers, args.inner_steps,
+        args.batch_size, args.block_size, device,
+    )
+    print(f"withinband-honest: final={honest['final_val_loss']:.3f}")
+    rows = []
+    for band in BAND_SWEEP:
+        scenario = Scenario(
+            f"withinband-{band}", f"Within-band 5/16, band {band}", True,
+            "within_band", 5, "clip", 0.0,
+        )
+        result = run_scenario(
+            scenario, corpus, rounds, args.workers, args.inner_steps,
+            args.batch_size, args.block_size, device, attack_band=band,
+        )
+        evidence = within_band_replay_evidence(args, corpus, device, band)
+        row = {
+            "band": band,
+            "final_val_loss": result["final_val_loss"],
+            "damage_vs_honest": result["final_val_loss"] - honest["final_val_loss"],
+            "malicious_selection_rate": result["malicious_selection_rate"],
+            "replay_distance": evidence["distance"],
+            "replay_fraud": evidence["fraud"],
+            "val_losses": result["val_losses"],
+        }
+        rows.append(row)
+        print(
+            f"withinband band={band}: final={row['final_val_loss']:.3f} "
+            f"damage={row['damage_vs_honest']:+.3f} "
+            f"mal_sel={fmt(row['malicious_selection_rate'])} "
+            f"replay_distance={row['replay_distance']:.4f} "
+            f"replay_fraud={row['replay_fraud']}"
+        )
+    out_dir = base / "out"
+    out_dir.mkdir(exist_ok=True)
+    prefix = "smoke_band_" if args.smoke else "band_"
+    payload = {
+        "config": {
+            "rounds": rounds, "workers": args.workers, "n_malicious": 5,
+            "device": device.type, "model_parameters": parameter_count(probe),
+            "bands": BAND_SWEEP,
+        },
+        "honest_reference": {
+            "final_val_loss": honest["final_val_loss"],
+            "val_losses": honest["val_losses"],
+        },
+        "sweep": rows,
+    }
+    (out_dir / f"{prefix}sweep_results.json").write_text(json.dumps(payload, indent=2))
+    plot_band_sweep(rows, honest["final_val_loss"], out_dir / f"{prefix}sweep.png")
+    print(f"wrote {out_dir / (prefix + 'sweep_results.json')}")
+
+
+def plot_band_sweep(rows, honest_final, out_path: Path):
+    fig, (left, right) = plt.subplots(1, 2, figsize=(12.5, 4.6), facecolor=SURFACE)
+    bands = [r["band"] for r in rows]
+    style_axes(left)
+    left.plot(bands, [r["final_val_loss"] for r in rows], color=PALETTE[5],
+              linewidth=2.0, marker="o", markersize=5, label="within-band 5/16, clip")
+    left.axhline(honest_final, color=PALETTE[1], linewidth=1.6, linestyle="--",
+                 label="honest reference")
+    left.set_xlabel("published tolerance band", color=INK_SECONDARY, fontsize=9)
+    left.set_ylabel("final validation loss", color=INK_SECONDARY, fontsize=9)
+    left.set_title("Loss damage that fits inside the band", color=INK,
+                   fontsize=11, loc="left", pad=10)
+    left.legend(frameon=False, fontsize=8, labelcolor=INK_SECONDARY)
+    style_axes(right)
+    right.bar([str(b) for b in bands], [r["malicious_selection_rate"] or 0.0 for r in rows],
+              color=PALETTE[7], width=0.6)
+    right.set_ylim(0, 1.05)
+    right.set_xlabel("published tolerance band", color=INK_SECONDARY, fontsize=9)
+    right.set_ylabel("malicious selection rate", color=INK_SECONDARY, fontsize=9)
+    right.set_title("Aggregation is the only layer that pushes back", color=INK,
+                    fontsize=11, loc="left", pad=10)
+    fig.suptitle(
+        "The band is the adversary's budget: replay audits pass by construction",
+        color=INK, fontsize=13, x=0.01, ha="left",
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(out_path, dpi=180, facecolor=SURFACE)
     plt.close(fig)
 

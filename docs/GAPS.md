@@ -4,6 +4,14 @@ Snapshot 2026-07-20, after Phase 1 closed on devnet. A self-audit of what the do
 against what the code and task ladder actually deliver. Ordered by how much each gap can hurt.
 Items marked (T) were folded into docs/TASKS.md.
 
+Status update, same day: the gaps closable in this repo were closed — the within-band damage
+scenario (`--band-sweep`, with explicit replay evidence that audits pass by construction), the
+zero-fraud verifier burn projection and Genesis operating point in economy.py, a 28-test sim
+suite with CI, SECURITY.md, CONTRIBUTING.md, and the doc-drift fixes (PRD as-built note, README
+privacy line). Still open: the LICENSE decision (owner call), and everything that lives in
+leviathan-net or requires hardware — band calibration across GPU classes, two-GPU replay, the
+production verifier daemon, multi-epoch re-join, randomness hardening, the dispute committee.
+
 ## 1. Security-model gaps
 
 ### Tolerance band is uncalibrated
