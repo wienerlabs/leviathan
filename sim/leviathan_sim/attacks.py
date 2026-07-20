@@ -4,7 +4,7 @@ import torch
 
 from leviathan_sim.swarm import LocalUpdate
 
-VALID_ATTACKS = frozenset({"none", "sign_flip", "gaussian", "lazy", "alie"})
+VALID_ATTACKS = frozenset({"none", "sign_flip", "gaussian", "lazy", "alie", "within_band"})
 
 
 @dataclass(frozen=True)
@@ -14,6 +14,8 @@ class InjectionConfig:
     sign_flip_scale: float = 5.0
     gaussian_std: float = 0.02
     alie_z: float = 1.5
+    band: float = 0.05
+    band_margin: float = 0.9
 
 
 @dataclass(frozen=True)
@@ -37,6 +39,24 @@ class Injector:
         if config.attack == "none" or not self.malicious_ids:
             return updates
         out = dict(updates)
+        if config.attack == "within_band":
+            # The adversary's whole budget is the published tolerance band: each
+            # malicious worker submits its honest delta plus a coordinated bias
+            # scaled so the relative replay distance stays at band_margin * band.
+            # Replay audits pass by construction; only aggregation limits this.
+            honest = torch.stack(
+                [u.delta for wid, u in updates.items() if wid not in self.malicious_ids]
+            )
+            direction = honest.mean(dim=0)
+            direction = direction / torch.linalg.vector_norm(direction).clamp(min=1e-12)
+            budget = config.band * config.band_margin
+            for wid in self.malicious_ids:
+                if wid not in out:
+                    continue
+                update = out[wid]
+                bias = -direction * budget * torch.linalg.vector_norm(update.delta)
+                out[wid] = replace(update, delta=update.delta + bias)
+            return out
         if config.attack == "alie":
             honest = torch.stack(
                 [u.delta for wid, u in updates.items() if wid not in self.malicious_ids]
