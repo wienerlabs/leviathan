@@ -137,6 +137,7 @@ Phase 0: the proof that the security economics survive contact with real transfo
 | `docs/DECISIONS.md` | prior-art sweep and the six locked decisions, sources inline |
 | `docs/ARCHITECTURE.md` | on-chain programs, daemons, round lifecycle, determinism strategy |
 | `docs/PRD.md`, `docs/TASKS.md` | phase acceptance criteria and the task ladder |
+| `docs/GAPS.md` | self-audit: where the docs promise more than the code delivers, ordered by risk |
 
 Reproduce the sim:
 

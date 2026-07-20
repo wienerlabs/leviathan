@@ -29,15 +29,26 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 ## Phase 2, Genesis Run
 
 - [ ] Tolerance band calibration harness across hardware classes (4090, 3090, A100, H100)
+- [ ] Two-GPU tolerance-band replay reproduction (Phase 1 exit criterion carried forward; folded into 1.9 but never run on two distinct GPUs)
+- [ ] Sim: within-band adversary budget scenario — maximum loss damage a coalition can inflict while staying inside the published band (closes the ARCHITECTURE.md claim the sim does not yet back)
+- [ ] Production verifier daemon: subscribe as Committee::Verifier, replay real gradients, call run_slash (decision core done in 1.8; shares the 1.9 libtorch toolchain)
+- [ ] Multi-epoch re-join resilience (deferred out of 1.9; prerequisite for any churn run)
+- [ ] Verifier economics: zero-fraud treasury burn projection for sustained audit pressure; publish Genesis testnet bond values under the (1-p)/p discipline
+- [ ] Publish the centralized-dispute limitation on the Genesis dashboard (slash_client is main_authority gated until the Phase 3 committee lands)
 - [ ] One-line installer + wallet flow + bond funding UX
 - [ ] Public site: live loss curve, node map, leaderboard, audit/slash feed
 - [ ] Relay infrastructure for non-hole-punchable nodes
-- [ ] Red-team bounty program design
+- [ ] Red-team bounty program design; SECURITY.md responsible-disclosure channel before the repo goes public
+- [ ] Repo hygiene before going public: LICENSE decision, CI job asserting sim outcomes (clip neutralizes sign-flip, audit catches ALIE, zero honest FP), CONTRIBUTING.md
 - [ ] 350M run rehearsal with internal nodes, then 1B public run
 
 ## Phase 3, mainnet
 
 - [ ] Legal review of token design
+- [ ] Independent security audit of the Anchor programs (coordinator, treasurer, authorizer) before real bonds
+- [ ] Round randomness hardening: VRF or recent-blockhash commitment replacing sha256(unix_timestamp, slot) (grindable, flagged in CODEMAP.md)
+- [ ] Bonded multi-verifier dispute committee with reporter bounty and treasury remainder, replacing the main_authority resolver (evolution locked in 1.6)
+- [ ] Regenerate program keypairs for mainnet (devnet keypairs live in private repo history, devnet-only per CODEMAP.md)
 - [ ] TGE via Wiener Launchpad rails; distributor program reuse for airdrop and vesting
 - [ ] Real-bond parameters from sim calibration; treasury and endowment wiring
 - [ ] Inference v0: vLLM workers + TOPLOC validation + settlement program
