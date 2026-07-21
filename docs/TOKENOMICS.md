@@ -5,13 +5,6 @@ Issue #6. Design consistent with the economic model already coded in
 engineering and product design document. It is not a legal opinion. Issue #5
 (counsel review) gates any public token offer.
 
-## Token
-
-The ticker is **$LEVI**. The name is set; the mainnet launch is deliberately
-sequenced after a credible public run demonstrates the bonded training economy
-working end to end, not before. A token with no proven protocol behind it has
-nothing to price.
-
 ## Design goals
 
 1. Pay for accepted learning work (Proof of Gradient), not for raw hash power.
@@ -39,7 +32,7 @@ From `genesis_parameters()` and `calibration_table()`:
 
 | Preset | Round cost (H100) | Round reward (1.35x) | Bond at p=0.1 | Expected catch rounds |
 |---|---|---|---|---|
-| 125M proof | $0.0120 | $0.0162 | $0.146 | 10 |
+| 125M proof | $0.0120 | $0.0162 | $0.15 | 10 |
 | 1B genesis | $0.240 | $0.324 | $2.91 | 10 |
 | 7B scale | $3.36 | $4.53 | $40.79 | 10 |
 
@@ -61,6 +54,9 @@ be sized for it.
 ## Supply sketch (pre-legal, adjustable)
 
 Working totals for modelling only. Counsel may require structural change.
+These percentages live only in this document. Round economics in
+`economy.py` and `docs/assets/tokenomics.json` are bond/reward/audit math, not
+supply allocation.
 
 | Allocation | Share | Vesting | Purpose |
 |---|---|---|---|
@@ -70,6 +66,11 @@ Working totals for modelling only. Counsel may require structural change.
 | Team | 25% | 1y cliff, 3y linear | Build and operate |
 | Early contributors / community | 10% | TGE unlock + short vest | Genesis participants, bug bounties |
 | Liquidity / market making | 5% | At TGE under multisig policy | CEX/DEX depth if pursued |
+
+Total 100%. The +10% team allocation was taken entirely from the training
+rewards endowment (45% to 35%). Training rewards remain the largest single
+bucket (35% > 25%), so the thesis that the network that trains the model owns
+the primary share of emission still holds.
 
 Emission is not a fixed block subsidy. Each run configures epoch earning rates on
 the coordinator; the treasury tops up the run vault. Unused endowment stays

@@ -20,7 +20,7 @@ Mainnet must use freshly generated program keypairs (see `docs/launch/MAINNET_DE
 - Audit probability from `verification_percent`
 - Tolerance band 0.05 operating point and within-band damage budget
 - `slash_bounty_bps` reporter share on forfeit
-- Zero-fraud treasury burn projection (~8.15% of rewards at p=0.1)
+- Zero-fraud treasury burn projection (~8.15% of rewards at p=0.1 with 1.35x reward margin)
 
 ## Attachments for the auditor
 
