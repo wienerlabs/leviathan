@@ -137,11 +137,17 @@ Phase 0: the proof that the security economics survive contact with real transfo
 | path | contents |
 |---|---|
 | `sim/` | Condorcet's aggregation, attack and staking layers ported from NumPy blobs to a real GPT trained by a 16-worker swarm: centered clip + excision vs sign-flip and ALIE coalitions, stake ledger with replay audits, break-even bond calibration against H100 market cost |
+| `scripts/` | Telemetry go/no-go analyzer, kill-switch evaluator, tokenomics exporter |
 | `docs/WHITEPAPER.md` | thesis, protocol, security model, economics, honest limitations |
 | `docs/DECISIONS.md` | prior-art sweep and the six locked decisions, sources inline |
 | `docs/ARCHITECTURE.md` | on-chain programs, daemons, round lifecycle, determinism strategy |
 | `docs/PRD.md`, `docs/TASKS.md` | phase acceptance criteria and the task ladder |
 | `docs/GAPS.md` | self-audit: where the docs promise more than the code delivers, ordered by risk |
+| `docs/REDTEAM_BOUNTY.md` | paid break classes, tiers, disclosure (issue #2) |
+| `docs/RETRO_REHEARSAL.md` | pilot retro and 1B go/no-go from checked-in telemetry (issue #3) |
+| `docs/TOKENOMICS.md` | PoG emission, treasury, TGE plan from economy.py (issue #6) |
+| `docs/ops/` | kill-switch alerts and on-call runbook (issue #9) |
+| `docs/launch/` | mainnet deploy, genesis checklist, public disclosures |
 
 Reproduce the sim:
 
