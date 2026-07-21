@@ -54,15 +54,23 @@ be sized for it.
 ## Supply sketch (pre-legal, adjustable)
 
 Working totals for modelling only. Counsel may require structural change.
+These percentages live only in this document. Round economics in
+`economy.py` and `docs/assets/tokenomics.json` are bond/reward/audit math, not
+supply allocation.
 
 | Allocation | Share | Vesting | Purpose |
 |---|---|---|---|
-| Training rewards endowment | 45% | Emission over multi-year PoG schedule | Pay accepted work |
+| Training rewards endowment | 35% | Emission over multi-year PoG schedule | Pay accepted work |
 | Audit / security treasury | 15% | Continuous draw for audit fees + red-team bounties | Fund p=0.1 pressure and issue #2 bounties |
 | Ecosystem / grants | 10% | Multisig, milestone grants | Tooling, relays, research |
-| Team | 15% | 1y cliff, 3y linear | Build and operate |
+| Team | 25% | 1y cliff, 3y linear | Build and operate |
 | Early contributors / community | 10% | TGE unlock + short vest | Genesis participants, bug bounties |
 | Liquidity / market making | 5% | At TGE under multisig policy | CEX/DEX depth if pursued |
+
+Total 100%. The +10% team allocation was taken entirely from the training
+rewards endowment (45% to 35%). Training rewards remain the largest single
+bucket (35% > 25%), so the thesis that the network that trains the model owns
+the primary share of emission still holds.
 
 Emission is not a fixed block subsidy. Each run configures epoch earning rates on
 the coordinator; the treasury tops up the run vault. Unused endowment stays
