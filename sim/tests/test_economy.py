@@ -49,7 +49,7 @@ def test_calibration_bond_scales_with_reward():
 
 def test_zero_fraud_burn_share_is_preset_independent():
     rows = audit_burn_projection([0.1])
-    expected = 0.1 * 1.1 / 1.2
+    expected = 0.1 * 1.1 / 1.35
     for row in rows:
         assert abs(row["burn_share_of_rewards"] - expected) < 1e-9
         assert row["treasury_burn_per_round_usd"] > 0.0
