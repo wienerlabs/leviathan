@@ -8,7 +8,7 @@
 - [x] Sim scenarios: honest baseline, sign-flip vs mean, sign-flip vs clip, ALIE vs clip, ALIE vs clip plus audit, non-IID honest FPR
 - [x] Economy calibration: break-even bond vs audit rate on H100 market cost, 125M/1B/7B presets
 - [ ] Landing page with manifesto and live sim charts (next session)
-- [ ] Name lock: Leviathan vs alternatives, domain and handle check
+- [~] Name lock: checklist in `docs/BRANDING.md`; final lock is owner decision
 
 ## Phase 1, devnet core
 
@@ -34,20 +34,26 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 - [~] Production verifier daemon: the decision core now lives in the substrate as the psyche-verifier crate (shared/verifier in leviathan-net): relative L2 distance, band verdicts, per-hardware calibration, sha256 fraud proofs matching the on-chain commitment, and a ReplayEngine trait with an audit_round orchestrator that convicts only the cheater in a mixed round, 13 tests. Remaining: plug the trainer in as the ReplayEngine (shares the 1.9 libtorch toolchain), read Committee::Verifier assignments from the coordinator, and submit run_slash
 - [ ] Multi-epoch re-join resilience (deferred out of 1.9; prerequisite for any churn run)
 - [x] Verifier economics: economy.py gains the zero-fraud projection (audit fee = 1.1x per-contribution H100 cost; treasury burn ~9.2% of rewards at p=0.1, preset-independent) and genesis_parameters() publishing the Genesis operating point (1B preset, p=0.1, band 0.05, bond = 9 rounds of reward); both emitted into results.json
-- [ ] Publish the centralized-dispute limitation on the Genesis dashboard (slash_client is main_authority gated until the Phase 3 committee lands)
+- [x] Publish the centralized-dispute limitation copy (`docs/launch/GENESIS_DISCLOSURES.md`); dashboard wiring still open
 - [ ] One-line installer + wallet flow + bond funding UX
 - [ ] Public site: live loss curve, node map, leaderboard, audit/slash feed
 - [ ] Relay infrastructure for non-hole-punchable nodes
-- [x] SECURITY.md responsible-disclosure channel (GitHub private vulnerability reporting; economic-security breaks explicitly in scope, no paid bounty until the program below ships)
-- [ ] Red-team bounty program design
-- [x] CI + tests: .github/workflows/ci.yml runs the 28-test sim suite on CPU torch (aggregation excises the outlier, within-band stays inside the band, replay catches sign-flip/lazy and passes honest, economy math); CONTRIBUTING.md documents setup, experiments and the docs discipline
+- [x] SECURITY.md responsible-disclosure channel (GitHub private vulnerability reporting; economic-security breaks explicitly in scope)
+- [x] Red-team bounty program design (`docs/REDTEAM_BOUNTY.md`, SECURITY.md linked; endowment funding is ops)
+- [x] CI + tests: .github/workflows/ci.yml runs the sim suite on CPU torch; CONTRIBUTING.md documents setup
+- [x] Rehearsal retro tooling: `scripts/analyze_telemetry.py` + `docs/RETRO_REHEARSAL.md` (current decision NO-GO for 1B)
+- [x] Kill-switch monitoring design: `docs/ops/OPS_RUNBOOK.md`, `docs/ops/alerts/leviathan-killswitch.rules.yml`, `scripts/check_killswitches.py`
 - [ ] LICENSE decision (owner call; blocks going public)
 - [ ] 350M run rehearsal with internal nodes, then 1B public run
+- [ ] Name lock: domains and branding (`docs/BRANDING.md` checklist; owner decision)
 
 ## Phase 3, mainnet
 
-- [ ] Legal review of token design
-- [ ] Independent security audit of the Anchor programs (coordinator, treasurer, authorizer) before real bonds
+- [x] Legal review briefing packet for counsel (`docs/LEGAL_BRIEFING.md`); memo itself is counsel-gated
+- [x] Audit prep package (`docs/AUDIT_PREP.md`); external report is budget/schedule-gated
+- [x] Tokenomics and TGE design (`docs/TOKENOMICS.md`, `docs/assets/tokenomics.json` from economy.py); final numbers wait on counsel
+- [x] Mainnet deploy runbook (`docs/launch/MAINNET_DEPLOY.md`); execution gated on audit + legal + tokenomics
+- [x] Genesis launch checklist and disclosures (`docs/launch/GENESIS_LAUNCH.md`, `GENESIS_DISCLOSURES.md`)
 - [ ] Round randomness hardening: VRF or recent-blockhash commitment replacing sha256(unix_timestamp, slot) (grindable, flagged in CODEMAP.md)
 - [ ] Bonded multi-verifier dispute committee with reporter bounty and treasury remainder, replacing the main_authority resolver (evolution locked in 1.6)
 - [ ] Regenerate program keypairs for mainnet (devnet keypairs live in private repo history, devnet-only per CODEMAP.md)
@@ -62,3 +68,4 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 - [ ] 7B+ run planning
 - [ ] Wienerpad futarchy market for next-model selection
 - [ ] TEE attestation lane for datacenter suppliers (Blackwell CC)
+- [ ] Monitoring stack production deploy and on-call rotation (design in docs/ops)
