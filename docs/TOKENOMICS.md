@@ -37,11 +37,11 @@ to collateral through the treasurer claim path already deployed.
 
 From `genesis_parameters()` and `calibration_table()`:
 
-| Preset | Round cost (H100) | Round reward (1.2x) | Bond at p=0.1 | Expected catch rounds |
+| Preset | Round cost (H100) | Round reward (1.35x) | Bond at p=0.1 | Expected catch rounds |
 |---|---|---|---|---|
-| 125M proof | $0.0120 | $0.0144 | $0.129 | 10 |
-| 1B genesis | $0.240 | $0.288 | $2.59 | 10 |
-| 7B scale | $3.36 | $4.03 | $36.25 | 10 |
+| 125M proof | $0.0120 | $0.0162 | $0.146 | 10 |
+| 1B genesis | $0.240 | $0.324 | $2.91 | 10 |
+| 7B scale | $3.36 | $4.53 | $40.79 | 10 |
 
 Break-even law (implemented in `break_even_bond`):
 
@@ -53,7 +53,7 @@ Zero-fraud audit burn (`audit_burn_projection`, fee = 1.1x H100 cost):
 
 | Preset at p=0.1, 100 workers | Audit fee / contribution | Treasury burn / round | Burn share of rewards |
 |---|---|---|---|
-| 1B genesis | $0.264 | $2.64 | 9.17% |
+| 1B genesis | $0.264 | $2.64 | 8.15% |
 
 This is the sustained cost of security when nobody is cheating. The treasury must
 be sized for it.

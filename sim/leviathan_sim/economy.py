@@ -57,6 +57,9 @@ def break_even_bond(audit_probability: float, reward_per_round: float) -> float:
     return reward_per_round * (1.0 - audit_probability) / audit_probability
 
 
+REWARD_COST_MULTIPLIER = 1.35
+
+
 @dataclass(frozen=True)
 class RunPreset:
     label: str
@@ -86,7 +89,7 @@ def calibration_table(audit_probabilities: list[float]) -> list[dict]:
     rows = []
     for preset in PRESETS:
         cost = h100_round_cost_usd(preset)
-        reward = 1.2 * cost
+        reward = REWARD_COST_MULTIPLIER * cost
         for p in audit_probabilities:
             rows.append(
                 {
@@ -112,7 +115,7 @@ def audit_burn_projection(
     rows = []
     for preset in PRESETS:
         cost = h100_round_cost_usd(preset)
-        reward = 1.2 * cost
+        reward = REWARD_COST_MULTIPLIER * cost
         for p in audit_probabilities:
             fee = fee_multiplier * cost
             burn = p * n_workers * fee
@@ -138,7 +141,7 @@ def genesis_parameters(audit_probability: float = 0.1, band: float = 0.05) -> di
     testnet collateral mint."""
     preset = next(p for p in PRESETS if p.params_billion == 1.0)
     cost = h100_round_cost_usd(preset)
-    reward = 1.2 * cost
+    reward = REWARD_COST_MULTIPLIER * cost
     return {
         "preset": preset.label,
         "audit_probability": audit_probability,
@@ -147,5 +150,5 @@ def genesis_parameters(audit_probability: float = 0.1, band: float = 0.05) -> di
         "bond_usd": break_even_bond(audit_probability, reward),
         "bond_rounds_of_reward": (1.0 - audit_probability) / audit_probability,
         "expected_rounds_to_catch": 1.0 / audit_probability,
-        "audit_burn_share_of_rewards": audit_probability * 1.1 / 1.2,
+        "audit_burn_share_of_rewards": audit_probability * 1.1 / REWARD_COST_MULTIPLIER,
     }
