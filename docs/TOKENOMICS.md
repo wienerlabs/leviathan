@@ -20,7 +20,7 @@ engineering and product design document. It is not a legal opinion. Issue #5
 |---|---|---|
 | Collateral (mainnet mint, TBD) | Bond deposits, slash forfeiture, optional reward redemption | External mint or network stable collateral |
 | PoG points | Per-epoch earned counter on the coordinator, already live on devnet | Coordinator epoch settlement |
-| Network token (symbol TBD, working name LEV) | Long-term reward and governance unit after TGE | Mint authority under multisig |
+| Network token ($LEVI) | Long-term reward and governance unit after TGE | Mint authority under a Squads multisig |
 
 Before TGE, testnet and genesis rehearsal pay only in the testnet collateral mint
 (`BWLv1Fj5RKJbcr3ZMLVKhviFq1i3tq6afgVS2ngyot3X` on devnet). PoG points convert
@@ -62,10 +62,10 @@ supply allocation.
 |---|---|---|---|
 | Training rewards endowment | 35% | Emission over multi-year PoG schedule | Pay accepted work |
 | Audit / security treasury | 15% | Continuous draw for audit fees + red-team bounties | Fund p=0.1 pressure and issue #2 bounties |
-| Ecosystem / grants | 10% | Multisig, milestone grants | Tooling, relays, research |
+| Ecosystem / grants | 10% | Squads multisig, milestone grants | Tooling, relays, research |
 | Team | 25% | 1y cliff, 3y linear | Build and operate |
 | Early contributors / community | 10% | TGE unlock + short vest | Genesis participants, bug bounties |
-| Liquidity / market making | 5% | At TGE under multisig policy | CEX/DEX depth if pursued |
+| Liquidity / market making | 5% | At TGE under Squads multisig policy | CEX/DEX depth if pursued |
 
 Total 100%. The +10% team allocation was taken entirely from the training
 rewards endowment (45% to 35%). Training rewards remain the largest single
@@ -111,7 +111,7 @@ Phases, each gated:
    authorities, upgrade keys offline.
 4. **Genesis run complete** on testnet with published metrics (issue #3 go).
 5. **TGE event** via Wiener Launchpad rails (or equivalent):
-   - Mint under multisig
+   - Mint under the Squads multisig
    - Distributor program for airdrop / vesting schedules
    - Public tokenomics page linking this document and the legal summary
    - No APY marketing copy
