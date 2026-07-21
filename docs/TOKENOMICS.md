@@ -57,10 +57,10 @@ Working totals for modelling only. Counsel may require structural change.
 
 | Allocation | Share | Vesting | Purpose |
 |---|---|---|---|
-| Training rewards endowment | 45% | Emission over multi-year PoG schedule | Pay accepted work |
+| Training rewards endowment | 35% | Emission over multi-year PoG schedule | Pay accepted work |
 | Audit / security treasury | 15% | Continuous draw for audit fees + red-team bounties | Fund p=0.1 pressure and issue #2 bounties |
 | Ecosystem / grants | 10% | Multisig, milestone grants | Tooling, relays, research |
-| Team | 15% | 1y cliff, 3y linear | Build and operate |
+| Team | 25% | 1y cliff, 3y linear | Build and operate |
 | Early contributors / community | 10% | TGE unlock + short vest | Genesis participants, bug bounties |
 | Liquidity / market making | 5% | At TGE under multisig policy | CEX/DEX depth if pursued |
 
