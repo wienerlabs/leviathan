@@ -25,10 +25,19 @@ authority's own keys, and anything already listed as a known limitation in docs/
 whitepaper's honest-limitations section — though sharpening a known limitation into a concrete
 exploit is very much in scope.
 
+## Paid red-team program
+
+The red-team bounty design is published in `docs/REDTEAM_BOUNTY.md`. Break classes A-E,
+severity tiers, disclosure timeline, and the default on-chain reporter share
+(`slash_bounty_bps = 5000`) are defined there. Off-protocol Critical/High/Medium/Low
+payouts become active when the treasury endowment is reserved (ops checklist in
+`docs/ops/OPS_RUNBOOK.md`). In-protocol bounties pay automatically on bond forfeit when
+the run has non-zero `slash_bounty_bps` and a reporter account.
+
 ## What to expect
 
 Acknowledgement within 72 hours, a severity assessment within a week, credit in the fix's
-release notes unless you prefer otherwise. There is no paid bounty yet; the red-team bounty
-program is a Phase 2 deliverable (docs/TASKS.md) and this policy will be updated when it ships.
+release notes unless you prefer otherwise. Severity maps to the tiers in
+`docs/REDTEAM_BOUNTY.md`.
 
 Good-faith research within this policy will not be met with legal action.

@@ -1,0 +1,109 @@
+{
+  "decision": "NO-GO",
+  "gates": [
+    {
+      "name": "honest_baseline_converges",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/results.json#honest-mean-iid",
+      "detail": "final_val_loss=2.1748"
+    },
+    {
+      "name": "naive_mean_fails_under_signflip",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/results.json#signflip-mean-iid",
+      "detail": "final_val_loss=12.0000"
+    },
+    {
+      "name": "clip_excision_neutralizes_signflip",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/results.json#signflip-clip-iid",
+      "detail": "final=2.2025 mal_sel=0.02666666666666667"
+    },
+    {
+      "name": "audit_catches_alie_coalition",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/results.json#alie-clip-audit-iid",
+      "detail": "caught=5 mean_catch=9.8 expected=10.0"
+    },
+    {
+      "name": "zero_honest_false_positives_noniid",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/results.json#honest-clip-noniid",
+      "detail": "honest_fpr=0.0"
+    },
+    {
+      "name": "within_band_damage_measured",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/band_sweep_results.json#band=0.05",
+      "detail": "damage=0.0195 honest=2.1734 replay_distance=0.0450 fraud=False"
+    },
+    {
+      "name": "damage_scales_with_band",
+      "required": false,
+      "passed": true,
+      "evidence": "docs/assets/band_sweep_results.json",
+      "detail": "damage_range=[0.0123,0.0629]"
+    },
+    {
+      "name": "verifier_zero_honest_fp",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/verify_results.json",
+      "detail": "honest_false_positives=0"
+    },
+    {
+      "name": "verifier_catches_cheater_classes",
+      "required": true,
+      "passed": true,
+      "evidence": "docs/assets/verify_results.json",
+      "detail": "cheaters_caught=3"
+    },
+    {
+      "name": "two_gpu_band_calibration",
+      "required": true,
+      "passed": false,
+      "evidence": "docs/GAPS.md, docs/TASKS.md Phase 2",
+      "detail": "not run: single-machine MPS only to date"
+    },
+    {
+      "name": "350m_rehearsal_telemetry",
+      "required": true,
+      "passed": false,
+      "evidence": "issue #3 scope",
+      "detail": "no 350M multi-node rehearsal telemetry in repo"
+    },
+    {
+      "name": "cross_hardware_band_harness",
+      "required": true,
+      "passed": false,
+      "evidence": "docs/TASKS.md Phase 2",
+      "detail": "4090/3090/A100/H100 calibration harness not completed"
+    },
+    {
+      "name": "production_verifier_daemon_live_slash",
+      "required": true,
+      "passed": false,
+      "evidence": "docs/TASKS.md (~ partial: psyche-verifier crate exists)",
+      "detail": "decision core exists; live run_slash path not closed"
+    },
+    {
+      "name": "multi_epoch_rejoin_resilience",
+      "required": false,
+      "passed": false,
+      "evidence": "DEVNET.md / TASKS.md",
+      "detail": "deferred; required before 7-day churn run"
+    }
+  ],
+  "required_failed": [
+    "two_gpu_band_calibration",
+    "350m_rehearsal_telemetry",
+    "cross_hardware_band_harness",
+    "production_verifier_daemon_live_slash"
+  ]
+}
