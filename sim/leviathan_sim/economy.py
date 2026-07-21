@@ -57,9 +57,6 @@ def break_even_bond(audit_probability: float, reward_per_round: float) -> float:
     return reward_per_round * (1.0 - audit_probability) / audit_probability
 
 
-REWARD_COST_MULTIPLIER = 1.35
-
-
 @dataclass(frozen=True)
 class RunPreset:
     label: str
@@ -85,11 +82,15 @@ def h100_round_cost_usd(
     return seconds / 3600.0 * usd_per_gpu_hour
 
 
+REWARD_MARGIN = 1.35
+AUDIT_FEE_MULTIPLIER = 1.1
+
+
 def calibration_table(audit_probabilities: list[float]) -> list[dict]:
     rows = []
     for preset in PRESETS:
         cost = h100_round_cost_usd(preset)
-        reward = REWARD_COST_MULTIPLIER * cost
+        reward = REWARD_MARGIN * cost
         for p in audit_probabilities:
             rows.append(
                 {
@@ -107,15 +108,12 @@ def calibration_table(audit_probabilities: list[float]) -> list[dict]:
 def audit_burn_projection(
     audit_probabilities: list[float],
     n_workers: int = 100,
-    fee_multiplier: float = 1.1,
+    fee_multiplier: float = AUDIT_FEE_MULTIPLIER,
 ) -> list[dict]:
-    """Zero-fraud equilibrium: with nobody to slash, verifier income is pure
-    treasury burn. A replay audit redoes one contribution's compute, so the fee
-    floor is the per-contribution H100 cost times a verifier margin."""
     rows = []
     for preset in PRESETS:
         cost = h100_round_cost_usd(preset)
-        reward = REWARD_COST_MULTIPLIER * cost
+        reward = REWARD_MARGIN * cost
         for p in audit_probabilities:
             fee = fee_multiplier * cost
             burn = p * n_workers * fee
@@ -135,13 +133,9 @@ def audit_burn_projection(
 
 
 def genesis_parameters(audit_probability: float = 0.1, band: float = 0.05) -> dict:
-    """The published operating point for the Genesis Run testnet, derived from
-    the same (1-p)/p discipline as the calibration table. Values are per worker
-    per the 1B preset; testnet bonds use these numbers denominated in the
-    testnet collateral mint."""
     preset = next(p for p in PRESETS if p.params_billion == 1.0)
     cost = h100_round_cost_usd(preset)
-    reward = REWARD_COST_MULTIPLIER * cost
+    reward = REWARD_MARGIN * cost
     return {
         "preset": preset.label,
         "audit_probability": audit_probability,
@@ -150,5 +144,7 @@ def genesis_parameters(audit_probability: float = 0.1, band: float = 0.05) -> di
         "bond_usd": break_even_bond(audit_probability, reward),
         "bond_rounds_of_reward": (1.0 - audit_probability) / audit_probability,
         "expected_rounds_to_catch": 1.0 / audit_probability,
-        "audit_burn_share_of_rewards": audit_probability * 1.1 / REWARD_COST_MULTIPLIER,
+        "audit_burn_share_of_rewards": (
+            audit_probability * AUDIT_FEE_MULTIPLIER / REWARD_MARGIN
+        ),
     }
