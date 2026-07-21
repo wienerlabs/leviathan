@@ -53,7 +53,7 @@ What we do not claim: cryptographic proof of training. The uncaught-rate, the to
 
 ## 6. Economics
 
-Calibration anchors rewards to compute reality: reward per round = 1.2x the H100-market cost of the round's FLOPs. The sim ships the full table; the shape is what matters. At audit rate p = 0.1 the break-even bond is nine rounds of reward at every scale: about $0.13 per worker for the 125M proof run, $2.60 for the 1B genesis run, $36 for the 7B scale run. Entry stays cheap for volunteers while persistent cheating is expected-negative from the first round.
+Calibration anchors rewards to compute reality: reward per round = 1.35x the H100-market cost of the round's FLOPs. The sim ships the full table; the shape is what matters. At audit rate p = 0.1 the break-even bond is nine rounds of reward at every scale: about $0.15 per worker for the 125M proof run, $2.91 for the 1B genesis run, $41 for the 7B scale run. Entry stays cheap for volunteers while persistent cheating is expected-negative from the first round.
 
 Flywheel: inference fees (vLLM workers verified by TOPLOC activation commitments) flow to the treasury; the treasury funds the next training run; futarchy (Wienerpad) decides what the network trains next.
 
