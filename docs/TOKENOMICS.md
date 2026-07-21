@@ -5,6 +5,13 @@ Issue #6. Design consistent with the economic model already coded in
 engineering and product design document. It is not a legal opinion. Issue #5
 (counsel review) gates any public token offer.
 
+## Token
+
+The ticker is **$LEVI**. The name is set; the mainnet launch is deliberately
+sequenced after a credible public run demonstrates the bonded training economy
+working end to end, not before. A token with no proven protocol behind it has
+nothing to price.
+
 ## Design goals
 
 1. Pay for accepted learning work (Proof of Gradient), not for raw hash power.
