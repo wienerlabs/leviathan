@@ -110,7 +110,7 @@ Phases, each gated:
 3. **Mainnet programs** (issue #7). Fresh program IDs, Squads multisig
    authorities, upgrade keys offline.
 4. **Genesis run complete** on testnet with published metrics (issue #3 go).
-5. **TGE event** via Wiener Launchpad rails (or equivalent):
+5. **TGE event** directly on Solana rails, no launchpad dependency:
    - Mint under the Squads multisig
    - Distributor program for airdrop / vesting schedules
    - Public tokenomics page linking this document and the legal summary
