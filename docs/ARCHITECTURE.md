@@ -80,5 +80,5 @@ Bitwise replay across heterogeneous GPUs is not assumed. Following OVIG and NAO,
 
 - Phase 1: coordinator + ledger on devnet, 4-node local swarm on one machine, full slash demo end to end.
 - Phase 2 Genesis Run: public testnet, 50+ volunteer nodes, 350M to 1B model, live site.
-- Phase 3: mainnet, TGE via Wiener Launchpad, real bonds, inference network v0 with TOPLOC.
+- Phase 3: mainnet, TGE directly on Solana rails, real bonds, inference network v0 with TOPLOC.
 - Phase 4: DanteGPU enterprise supply, 7B+ runs, Wienerpad futarchy choosing the next model.

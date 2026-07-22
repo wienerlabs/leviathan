@@ -57,7 +57,7 @@ Exit criteria: recorded end-to-end conviction demo, anchor test suite green, two
 - [ ] Round randomness hardening: VRF or recent-blockhash commitment replacing sha256(unix_timestamp, slot) (grindable, flagged in CODEMAP.md)
 - [ ] Bonded multi-verifier dispute committee with reporter bounty and treasury remainder, replacing the main_authority resolver (evolution locked in 1.6)
 - [ ] Regenerate program keypairs for mainnet (devnet keypairs live in private repo history, devnet-only per CODEMAP.md)
-- [ ] TGE via Wiener Launchpad rails; distributor program reuse for airdrop and vesting
+- [ ] TGE directly on Solana rails; distributor program for airdrop and vesting
 - [ ] Real-bond parameters from sim calibration; treasury and endowment wiring
 - [ ] Inference v0: vLLM workers + TOPLOC validation + settlement program
 - [ ] Arweave checkpoint lineage via zk-lokomotive rail
