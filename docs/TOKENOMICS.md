@@ -42,6 +42,13 @@ Break-even law (implemented in `break_even_bond`):
 bond = reward * (1 - p) / p
 ```
 
+This is a floor against the cheater, not the whole story. A bonded verifier
+committee adds a second, independent floor: the forfeited bond must also pay the
+verifiers who did the auditing, split across the quorum. At genesis scale that
+second constraint dominates, so a three-verifier committee needs roughly $10.55
+rather than the $2.91 above, and the bond the network requires is the larger of
+the two. See [COMMITTEE_ECONOMICS.md](COMMITTEE_ECONOMICS.md).
+
 Zero-fraud audit burn (`audit_burn_projection`, fee = 1.1x H100 cost):
 
 | Preset at p=0.1, 100 workers | Audit fee / contribution | Treasury burn / round | Burn share of rewards |
