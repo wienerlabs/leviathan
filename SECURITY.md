@@ -10,6 +10,20 @@ Use GitHub's private vulnerability reporting on this repository (Security tab â†
 vulnerability"). Reports go to the wienerlabs maintainers privately; do not open a public issue
 for anything exploitable.
 
+### While the programs hold nothing
+
+Until mainnet bonds are on, the programs are deployed only to devnet, against a collateral
+token with no value, and the mainnet program ids are not deployed at all. There is nothing to
+steal, so our own pre-mainnet reviews are published in the open â€” findings, severities, file
+and line, and the tests that reproduce them. The internal review in
+wienerlabs/leviathan#15 is the first of these; the report lives in
+`leviathan-net/docs/SECURITY_REVIEW_INTERNAL.md`. Publishing them is the honest-claims policy
+applied to our own work, and it is deliberate, not an oversight.
+
+That is a statement about us, not an invitation. If you find something, still use the private
+channel: you do not know what is deployed where, and the rule above flips the moment any run
+holds value. From then on everything goes private first, including ours.
+
 In scope, in rough order of how much we care:
 
 1. Economic-security breaks: any way to cheat the bond/audit/slash loop with positive expected
