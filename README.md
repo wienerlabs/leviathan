@@ -109,17 +109,17 @@ The break-even bond law held on a real transformer run: at audit probability p =
 
 ![security economics](docs/assets/security_economics.png)
 
-The published tolerance band is, by construction, the adversary's undetectable budget — so the sim prices it. A 5/16 coalition biasing against the honest mean at 0.9x the band passes every replay audit (measured distance exactly 0.9x band, zero fraud verdicts) and is fully accepted by the aggregator; what it buys is the damage curve below. At the operating band of 0.05 the whole coalition purchases +0.019 final loss against the 2.173 honest reference, about 0.9%, and the cost grows roughly linearly with band width. That number is why the band is a published dashboard metric and why calibrating it tightly per hardware class is a Genesis-gating task.
+The published tolerance band is, by construction, the adversary's undetectable budget, so the sim prices it. A 5/16 coalition biasing against the honest mean at 0.9x the band passes every replay audit (measured distance exactly 0.9x band, zero fraud verdicts) and is fully accepted by the aggregator; what it buys is the damage curve below. At the operating band of 0.05 the whole coalition purchases +0.019 final loss against the 2.173 honest reference, about 0.9%, and the cost grows roughly linearly with band width. That number is why the band is a published dashboard metric and why calibrating it tightly per hardware class is a Genesis-gating task.
 
 ![band sweep](docs/assets/band_sweep.png)
 
 ## Phase 1 progress
 
-The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0) at wienerlabs/leviathan-net, carrying the layer upstream designed but left unimplemented: bonds, replay audits, slashing.
+The network substrate is a fork of PsycheFoundation/nousnet (Apache-2.0) at [wienerlabs/leviathan-net](https://github.com/wienerlabs/leviathan-net), carrying the layer upstream designed but left unimplemented: bonds, replay audits, slashing.
 
 - 1.1 Fork bootstrap: mirror live, chain-side crates compile clean, upstream memnet suite 14/14 with no validator
 - 1.2 Code map: docs/CODEMAP.md; dead code confirmed at file:line (verifier dispatch is a todo, Ejected never set, slashed never read), bond attach points locked
-- 1.3 Devnet deployment under our own program IDs: coordinator JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN, authorizer 2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv, treasurer 9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8
+- 1.3 Devnet deployment under our own program IDs (since replaced; see below for the current ones)
 - 1.4 Bonded participation in the treasurer: deposit, challenge-window withdraw, and settlement that forfeits slashed collateral into the run vault
 - 1.5 Audit lottery: verifier-to-target assignments derived from the round seed, deterministic and replayable, scaling with verification_percent
 - 1.6 Dispute and slash: the coordinator's slashed counter that upstream wrote but no program read now has a live producer feeding the treasurer settlement
@@ -130,13 +130,45 @@ The network substrate is a private fork of PsycheFoundation/nousnet (Apache-2.0)
 
 Phase 1 is complete on devnet: the trust machine (bonds, audits, slashing) and the training swarm both run on live chain.
 
+## Since Phase 1
+
+Everything below is verified on devnet or reproducible from the linked documents.
+
+- **Committee and appeals court.** A bonded verifier committee convicts by a two-thirds quorum. A convicted target can appeal to a larger, separately drawn tie-breaker bench; if the bench overturns, the convicting verifiers forfeit their bonds. Verified live: two verifiers convict, the target appeals, two tie-breakers overturn, both verifiers forfeit 200 and the target keeps its full bond ([DISPUTE_DESIGN.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/DISPUTE_DESIGN.md)).
+- **Committee economics.** The bond is set by verifier pay, not deterrence: at p = 0.1 on the 1B preset, a three-verifier committee needs $10.55, against a $2.91 deterrence floor ([docs/COMMITTEE_ECONOMICS.md](docs/COMMITTEE_ECONOMICS.md)).
+- **Band calibration on real hardware.** Honest bf16 drift on an RTX 3060 Ti peaks at 0.0058 against the fp32 reference, which calibrates to a band of 0.029 at a 5x safety factor, under the 0.05 default ([BAND_CALIBRATION.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/BAND_CALIBRATION.md)).
+- **Internal security review.** Three passes over the programs, the verifier and the client's network layer found 28 code findings, 3 of them critical, each reproduced by a test and fixed ([SECURITY_REVIEW_INTERNAL.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/SECURITY_REVIEW_INTERNAL.md), issue #15). Account layouts changed, so the programs were redeployed rather than upgraded.
+- **Training on rented GPUs.** Three Nosana nodes trained one run on 2026-08-03; on 2026-10-09 two rented RTX 3090s trained the flagship `leviathan-devnet` run, each signing its own Join, Tick and Witness transactions ([NOSANA.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/NOSANA.md)).
+- **A live cheater caught by replay.** On a bonded devnet run, three nodes posted 500 each and one broadcast a forged gradient through the client's test switch. The verifier daemon replayed the first step: the honest nodes landed at 0.0037 and 0.0043, the cheater at 6.0046 against the 0.05 band. It was slashed on chain with both hashes in the log, ejected, and its withdrawal returned nothing of its 500 bond (leviathan-net#29). That slash went through the run authority, not the committee.
+- **Dashboard.** [leviathan.run/dashboard](https://leviathan.run/dashboard) decodes the coordinator and treasurer accounts in the browser: runs, roles drawn from the round seed, points, convictions and appeals.
+- **$LEVI on mainnet.** Token-2022 mint `LeViePUwqFYuKzA5sDXHkU2Jec1xwDn8Tdk55ecSqvv` with mint and freeze authority revoked; allocation and locks in [docs/TOKENOMICS.md](docs/TOKENOMICS.md).
+
+Current devnet program IDs:
+
+| program | id |
+|---|---|
+| coordinator | `GdHJHiQp7uMv8TanfpaCaKQ8nHm5suvEt9JvjpZFWZ19` |
+| authorizer | `ECEmta24U9WCwh397N4diSc8JnAbyJTG3YiTUVL5umrb` |
+| treasurer | `Fq1Mv8osXqHxiiXjm4yhvQGE5wgx9QMueK8n2qwbqovV` |
+
+## Where it stands
+
+The protocol is live on devnet and the verification pressure is real. What is not there yet, in the order it opens:
+
+- The model is a test model: Nano-Llama, a 30-token vocabulary at 64 tokens of context. The first public run's model and dataset are still open ([FIRST_RUN.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/FIRST_RUN.md)).
+- Joining needs a per-node authorization from the run's join authority. The protocol supports an open grant; it stays closed while bonds are off, because open join without bonds makes identities free.
+- Bonds with real value wait on the external audit (#4) and counsel (#5). The planned first mainnet stage runs bondless, so an ejected cheater loses its epoch rewards and nothing more.
+- The training programs are not deployed on mainnet-beta.
+- The verifier daemon replays a cold-start step today; replaying later steps needs the model and optimizer state at that step.
+- Robust aggregation ships in the client behind `LEVIATHAN_ROBUST_AGG` and is off by default.
+
 ## This repository
 
 Phase 0: the proof that the security economics survive contact with real transformer gradients.
 
 | path | contents |
 |---|---|
-| `sim/` | Condorcet's aggregation, attack and staking layers ported from NumPy blobs to a real GPT trained by a 16-worker swarm: centered clip + excision vs sign-flip and ALIE coalitions, stake ledger with replay audits, break-even bond calibration against H100 market cost |
+| `sim/` | Condorcet's aggregation, attack and staking layers ported from NumPy blobs to a real GPT trained by a 16-worker swarm: centered clip + excision vs sign-flip and ALIE coalitions, stake ledger with replay audits, break-even bond calibration against H100 market cost, verifier committee economics; 48 tests in CI |
 | `scripts/` | Telemetry go/no-go analyzer, kill-switch evaluator, tokenomics exporter |
 | `docs/WHITEPAPER.md` | thesis, protocol, security model, economics, honest limitations |
 | `docs/DECISIONS.md` | prior-art sweep and the six locked decisions, sources inline |
@@ -145,7 +177,10 @@ Phase 0: the proof that the security economics survive contact with real transfo
 | `docs/GAPS.md` | self-audit: where the docs promise more than the code delivers, ordered by risk |
 | `docs/REDTEAM_BOUNTY.md` | paid break classes, tiers, disclosure (issue #2) |
 | `docs/RETRO_REHEARSAL.md` | pilot retro and 1B go/no-go from checked-in telemetry (issue #3) |
-| `docs/TOKENOMICS.md` | PoG emission, treasury, TGE plan from economy.py (issue #6) |
+| `docs/TOKENOMICS.md` | PoG emission, treasury, $LEVI supply and locks (issue #6) |
+| `docs/COMMITTEE_ECONOMICS.md` | committee size, quorum and the bond that verifier pay forces (leviathan-net#4) |
+| `docs/CODEMAP.md` | file:line map of the nousnet fork and its dead code |
+| `docs/AUDIT_PREP.md`, `docs/LEGAL_BRIEFING.md` | external audit scope (issue #4) and the fact packet for counsel (issue #5) |
 | `docs/ops/` | kill-switch alerts and on-call runbook (issue #9) |
 | `docs/launch/` | mainnet deploy, genesis checklist, public disclosures |
 
@@ -161,4 +196,4 @@ PYTORCH_ENABLE_MPS_FALLBACK=1 uv run python -m leviathan_sim.run --rounds 30
 
 Built on the shoulders of, and differentiated from: Psyche/nousnet (Apache-2.0 fork substrate: Solana coordinator, iroh P2P, Rust DisTrO), SparseLoCo (MIT compression recipe), TOPLOC (MIT inference verification), OVIG (the audit loop's academic validation), Condorcet (wienerlabs: the aggregation and bond-economics research core), DanteGPU (supply), Wienerpad (futarchy governance), zk-lokomotive (Arweave rail).
 
-Private under wienerlabs while the Genesis Run is prepared; going public is gated on the Phase 2 repo-hygiene checklist in docs/TASKS.md (the LICENSE decision is the open item — CI, tests, SECURITY.md and CONTRIBUTING.md are in place).
+This repository is public. It has no LICENSE file yet, so all rights are reserved by default until the owners choose one; leviathan-net is Apache-2.0.
