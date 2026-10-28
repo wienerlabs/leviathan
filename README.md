@@ -174,6 +174,7 @@ Phase 0: the proof that the security economics survive contact with real transfo
 | `docs/DECISIONS.md` | prior-art sweep and the six locked decisions, sources inline |
 | `docs/ARCHITECTURE.md` | on-chain programs, daemons, round lifecycle, determinism strategy |
 | `docs/PRD.md`, `docs/TASKS.md` | phase acceptance criteria and the task ladder |
+| `docs/ROADMAP.md` | what done means, the critical path to mainnet, owner decisions and stop rules, with a typeset PDF |
 | `docs/GAPS.md` | self-audit: where the docs promise more than the code delivers, ordered by risk |
 | `docs/REDTEAM_BOUNTY.md` | paid break classes, tiers, disclosure (issue #2) |
 | `docs/RETRO_REHEARSAL.md` | pilot retro and 1B go/no-go from checked-in telemetry (issue #3) |
