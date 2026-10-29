@@ -141,7 +141,7 @@ Everything below is verified on devnet or reproducible from the linked documents
 - **Training on rented GPUs.** Three Nosana nodes trained one run on 2026-08-03; on 2026-10-09 two rented RTX 3090s trained the flagship `leviathan-devnet` run, each signing its own Join, Tick and Witness transactions ([NOSANA.md](https://github.com/wienerlabs/leviathan-net/blob/main/docs/NOSANA.md)).
 - **A live cheater caught by replay.** On a bonded devnet run, three nodes posted 500 each and one broadcast a forged gradient through the client's test switch. The verifier daemon replayed the first step: the honest nodes landed at 0.0037 and 0.0043, the cheater at 6.0046 against the 0.05 band. It was slashed on chain with both hashes in the log, ejected, and its withdrawal returned nothing of its 500 bond (leviathan-net#29). That slash went through the run authority, not the committee.
 - **Dashboard.** [leviathan.run/dashboard](https://leviathan.run/dashboard) decodes the coordinator and treasurer accounts in the browser: runs, roles drawn from the round seed, points, convictions and appeals.
-- **$LEVI on mainnet.** Token-2022 mint `REDACTED_LEVI_MINT` with mint and freeze authority revoked; allocation and locks in [docs/TOKENOMICS.md](docs/TOKENOMICS.md).
+- **$LEVI on mainnet.** A Token-2022 mint with mint and freeze authority revoked; its addresses are published at launch. Allocation and locks in [docs/TOKENOMICS.md](docs/TOKENOMICS.md).
 
 Current devnet program IDs:
 
