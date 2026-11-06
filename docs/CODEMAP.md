@@ -71,6 +71,8 @@ Nondeterminism sources to absorb in the tolerance band:
 
 ## Devnet deployment, 2026-07-19
 
+Historical record of the first deployment. The current program IDs are in the README.
+
 | program | id |
 |---|---|
 | coordinator | JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN |

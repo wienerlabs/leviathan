@@ -8,15 +8,15 @@ external report with critical and high findings closed.
 
 | Program | Role | Devnet ID (not for mainnet) |
 |---|---|---|
-| Coordinator | Rounds, audit lottery, eject/slash counters | `JD9rHTiqBFgHjViWZc7gFZX74LvKKysbLbqFRaFvtmmN` |
-| Treasurer | Bonds, withdraw challenge, slash settle, bounty bps | `9A1kc8Dr9dFJW9t1npAk7EHrADm6TAyFeVLH27CDdvv8` |
-| Authorizer | Join authorization | `2Kg5ERG6ubuzyPmQ24axsws7V2ja2EvWp5CHMKFCrTxv` |
+| Coordinator | Rounds, audit lottery, eject/slash counters | `GdHJHiQp7uMv8TanfpaCaKQ8nHm5suvEt9JvjpZFWZ19` |
+| Treasurer | Bonds, withdraw challenge, slash settle, bounty bps | `Fq1Mv8osXqHxiiXjm4yhvQGE5wgx9QMueK8n2qwbqovV` |
+| Authorizer | Join authorization | `ECEmta24U9WCwh397N4diSc8JnAbyJTG3YiTUVL5umrb` |
 
 Mainnet must use freshly generated program keypairs (see `docs/launch/MAINNET_DEPLOY.md`).
 
 ## Economic model in scope
 
-- Bond size law: `reward * (1-p)/p` (`sim/leviathan_sim/economy.py`)
+- Bond size law: `reward * (1-p)/p` (`sim/leviathan_sim/economy.py`) is the deterrence floor; the required bond is the larger of that and the verifier-sustainable bond (`docs/COMMITTEE_ECONOMICS.md`)
 - Audit probability from `verification_percent`
 - Tolerance band 0.05 operating point and within-band damage budget
 - `slash_bounty_bps` reporter share on forfeit

@@ -35,6 +35,7 @@ From `genesis_parameters()` at the 1B preset (see `docs/assets/results.json` and
 | Tolerance band | 0.05 relative L2 |
 | Round reward (H100-anchored) | ~$0.324 |
 | Break-even bond | ~$2.91 (9 rounds of reward) |
+| Required bond, 3-verifier committee | ~$10.55 (verifier pay binds, see `docs/COMMITTEE_ECONOMICS.md`) |
 | Expected rounds to catch | 10 |
 | Within-band damage budget (5/16 coalition) | +0.019 final loss (~0.9% of 2.173 reference) |
 | On-chain reporter share | `Run.slash_bounty_bps` (default design: 5000 = 50%) |
