@@ -24,11 +24,11 @@ number without trusting this document.
 |---|---|---|
 | Collateral (mainnet mint, TBD for run bonds) | Bond deposits, slash forfeiture, optional reward redemption | External mint or network stable collateral |
 | PoG points | Per-epoch earned counter on the coordinator, already live on devnet | Coordinator epoch settlement |
-| Network token ($LEVI) | Long-term reward and governance unit | Mint `REDACTED_LEVI_MINT` (Token-2022) |
+| Network token ($LEVI) | Long-term reward and governance unit | Token-2022 mint, address published at launch |
 
 $LEVI is live on Solana mainnet:
 
-- Mint: `REDACTED_LEVI_MINT`
+- Mint: address published at launch
 - Token-2022, 9 decimals, total supply 1,000,000,000
 - Mint authority: revoked. Freeze authority: revoked.
 - Extensions: metadataPointer and tokenMetadata only. No transfer fee.
@@ -84,10 +84,10 @@ can verify. A row without an address is an intention only.
 |---|---|---|---|---|
 | Training rewards endowment | 35% | Intention | Multi-year PoG emission from treasury-funded run vaults; not a separate Streamflow stream | (no dedicated contract; funds sit under treasury policy until emitted) |
 | Audit / security treasury | 15% | Intention | Continuous draw for audit fees and red-team bounties under treasury policy | (no dedicated contract; same treasury) |
-| Ecosystem / grants | 10% | Settled | Streamflow, immutable, non-cancellable. Linear over 24 months from 29 July 2026. Recipient is the treasury multisig, not a personal wallet | `REDACTED_ADDRESS_8` |
-| Team | 25% | Settled | Streamflow, immutable, non-cancellable. Nothing unlocks before 29 July 2027, then 36 monthly releases of 6,944,444 LEVI. Cannot be cancelled by the team | `REDACTED_ADDRESS_3` |
+| Ecosystem / grants | 10% | Settled | Streamflow, immutable, non-cancellable. Linear over 24 months from 29 July 2026. Recipient is the treasury multisig, not a personal wallet | at launch |
+| Team | 25% | Settled | Streamflow, immutable, non-cancellable. Nothing unlocks before 29 July 2027, then 36 monthly releases of 6,944,444 LEVI. Cannot be cancelled by the team | at launch |
 | Early contributors / community | 10% | Intention | TGE unlock plus short vest when that path ships | (no dedicated contract yet) |
-| Liquidity / market making | plan 5%; contributed ~8.08% | Settled as pool balance, not as an LP lock | LEVI and SOL sit in the Raydium CPMM pool. Reserves move with trading, so the share is not constant. The extra above 5% was funded from the treasury to deepen the book before the first unlocks arrive. The LP position is not locked | Pool `REDACTED_ADDRESS_9` |
+| Liquidity / market making | plan 5%; contributed ~8.08% | Settled as pool balance, not as an LP lock | LEVI and SOL sit in the Raydium CPMM pool. Reserves move with trading, so the share is not constant. The extra above 5% was funded from the treasury to deepen the book before the first unlocks arrive. The LP position is not locked | Pool address published at launch |
 
 Total plan shares sum to 100%. The historical note still holds for the
 intention map: team rose from 15% to 25% by reducing the training rewards
@@ -100,24 +100,24 @@ unminted or locked, never inflated ad hoc.
 
 ### Team lock (settled)
 
-Contract `REDACTED_ADDRESS_3` holds 250,000,000 LEVI
+The team Streamflow contract holds 250,000,000 LEVI
 (25% of supply) on Streamflow. The stream is immutable and cannot be cancelled.
 Nothing unlocks until 29 July 2027. After that cliff, unlocks run monthly across
-36 months at 6,944,444 LEVI per month. Recipient:
-`REDACTED_ADDRESS_7`.
+36 months at 6,944,444 LEVI per month. The recipient address is published at
+launch.
 
 ### Ecosystem and grants lock (settled)
 
-Contract `REDACTED_ADDRESS_8` holds 100,000,000 LEVI
+The ecosystem Streamflow contract holds 100,000,000 LEVI
 (10% of supply) on Streamflow. The stream is immutable and cannot be cancelled.
 Unlock is linear across 24 months starting 29 July 2026. Recipient is the
-treasury multisig `REDACTED_ADDRESS_4`, not a personal
+treasury multisig, not a personal
 wallet. That differs from the earlier sketch (delayed start and non-treasury
 recipient).
 
 ### Liquidity (settled as open pool, not locked)
 
-Raydium CPMM pool `REDACTED_ADDRESS_9` held, at the
+The Raydium CPMM pool held, at the
 29 July 2026 mainnet read, 80,751,548 LEVI and 67.19 SOL (about 9,948 USD).
 Cumulative LEVI contributed to liquidity is about 8.08% of supply against a
 planned 5%. The increase was funded from the treasury to deepen the book before
@@ -137,19 +137,20 @@ Streamflow commitments.
 
 ## Where the supply actually is
 
-Balances below were read on Solana mainnet on 29 July 2026 against the named
-addresses. Re-check each line on-chain; pool and unlocked stream balances move.
+Balances below were read on Solana mainnet on 29 July 2026. The addresses are
+published at launch; re-check each line on-chain then, since pool and unlocked
+stream balances move.
 
 | Location | Address | Amount (LEVI) | Share of 1B | Control |
 |---|---|---|---|---|
-| Treasury multisig (Squads, 2 of 3) | `REDACTED_ADDRESS_4` | 500,160,070 | 50.02% | Program-derived Squads vault. No private key exists for this address |
-| Team Streamflow lock | `REDACTED_ADDRESS_3` | 250,000,000 | 25.00% | Immutable stream. Recipient `REDACTED_ADDRESS_7`. No unlock before 29 July 2027 |
-| Ecosystem Streamflow lock | `REDACTED_ADDRESS_8` | 100,000,000 | 10.00% | Immutable stream. Recipient is the treasury multisig. Linear 24 months from 29 July 2026 |
-| Raydium CPMM pool | `REDACTED_ADDRESS_9` | 80,751,548 (pool reserve at read) | ~8.08% contributed; reserve share moves with trading | Open market pool. LP position not locked |
-| Remaining float | various | residual to 1,000,000,000 after the rows above | residual | Circulating and other accounts. Founder wallet `REDACTED_ADDRESS_5` holds essentially zero LEVI and is not a custody surface |
+| Treasury multisig (Squads, 2 of 3) | at launch | 500,160,070 | 50.02% | Program-derived Squads vault. No private key exists for this address |
+| Team Streamflow lock | at launch | 250,000,000 | 25.00% | Immutable stream. Recipient published at launch. No unlock before 29 July 2027 |
+| Ecosystem Streamflow lock | at launch | 100,000,000 | 10.00% | Immutable stream. Recipient is the treasury multisig. Linear 24 months from 29 July 2026 |
+| Raydium CPMM pool | at launch | 80,751,548 (pool reserve at read) | ~8.08% contributed; reserve share moves with trading | Open market pool. LP position not locked |
+| Remaining float | various | residual to 1,000,000,000 after the rows above | residual | Circulating and other accounts. The founder wallet holds essentially zero LEVI and is not a custody surface |
 
 Mint authority and freeze authority on
-`REDACTED_LEVI_MINT` are both revoked. Further supply
+the mint are both revoked. Further supply
 cannot be minted by any key.
 
 ## PoG to token conversion
@@ -185,8 +186,8 @@ Phases, each gated:
 2. **Audit complete** (issue #4). Critical/high findings closed on coordinator,
    treasurer, authorizer.
 3. **Mainnet programs** (issue #7). Fresh program IDs for training programs,
-   Squads treasury already live at
-   `REDACTED_ADDRESS_4`, upgrade keys offline.
+   Squads treasury already live,
+   upgrade keys offline.
 4. **Genesis run complete** on testnet with published metrics (issue #3 go).
 5. **Public launch hygiene** on Solana rails (no launchpad dependency):
    - Mint already live with revoked mint and freeze authority
